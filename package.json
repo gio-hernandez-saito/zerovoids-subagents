@@ -1,0 +1,12 @@
+{
+  "name": "zerovoids-subagents",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Transforming shattered fragments into a cosmos",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

@@ -1,0 +1,84 @@
+#!/bin/bash
+# Commit message validation hook
+# Enforces zerovoids-subagents commit message format
+
+set -e
+
+# Allowed prefixes
+ALLOWED_PREFIXES="feat|fix|chore|docs|refactor|revert"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+print_error() { echo -e "${RED}❌${NC} $1"; }
+print_success() { echo -e "${GREEN}✅${NC} $1"; }
+print_info() { echo -e "${YELLOW}ℹ${NC} $1"; }
+
+# Read commit message
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Normalize line endings (handle both LF and CRLF)
+commit_msg=$(echo "$commit_msg" | tr -d '\r')
+
+# Split into lines
+IFS=$'\n' read -d '' -r -a lines <<< "$commit_msg" || true
+
+# Check if message is empty
+if [ ${#lines[@]} -eq 0 ] || [ -z "${lines[0]}" ]; then
+    print_error "커밋 메시지가 비어있습니다"
+    exit 1
+fi
+
+# 1. Validate first line: prefix: title
+first_line="${lines[0]}"
+if ! echo "$first_line" | grep -qE "^($ALLOWED_PREFIXES): .+"; then
+    print_error "첫 줄 형식 오류"
+    echo ""
+    print_info "올바른 형식:"
+    echo "  [prefix]: [제목]"
+    echo ""
+    print_info "허용된 prefix:"
+    echo "  feat, fix, chore, docs, refactor, revert"
+    echo ""
+    print_info "예시:"
+    echo "  feat: add react-optimizer agent"
+    echo "  fix: correct template frontmatter"
+    echo "  docs: update architecture guide"
+    exit 1
+fi
+
+# Find first non-empty line after title (skip empty lines)
+body_start_idx=-1
+for ((i=1; i<${#lines[@]}; i++)); do
+    if [ -n "${lines[$i]}" ]; then
+        body_start_idx=$i
+        break
+    fi
+done
+
+# 2. If body exists, validate it starts with '- '
+if [ $body_start_idx -ne -1 ]; then
+    for ((i=$body_start_idx; i<${#lines[@]}; i++)); do
+        line="${lines[$i]}"
+        # Skip empty lines
+        if [ -n "$line" ]; then
+            if ! echo "$line" | grep -qE "^- "; then
+                print_error "본문은 '- '로 시작해야 합니다 (대시 + 띄어쓰기)"
+                echo ""
+                print_info "문제 라인:"
+                echo "  $line"
+                echo ""
+                print_info "올바른 형식:"
+                echo "  - 내용을 여기에 작성"
+                exit 1
+            fi
+        fi
+    done
+fi
+
+print_success "커밋 메시지 형식 올바름"
+exit 0
