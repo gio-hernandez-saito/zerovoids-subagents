@@ -85,9 +85,18 @@ fix: template frontmatter 수정
 
 ```
 feat:add agent          # ❌ 콜론 뒤 띄어쓰기 없음
+```
+
+```
 add agent               # ❌ prefix 없음
+```
+
+```
 feat: add agent
 내용 추가               # ❌ 두 번째 줄이 비어있지 않음
+```
+
+```
 feat: add agent
 
 내용 추가               # ❌ '- '로 시작하지 않음
@@ -125,44 +134,56 @@ feat: add agent
 
 ### 제출 전 체크리스트
 
-Agent를 제출하기 전에 다음 항목을 확인하세요:
+#### ⚙️ 자동 검증 (`./bin/validate`)
 
-#### 📋 필수 항목
+다음 항목은 `./bin/validate` 명령으로 자동 검증됩니다:
 
-- [ ] **명확한 이름** (소문자-하이픈 형식, 예: `react-hook-optimizer`)
-- [ ] **완전한 Frontmatter** (name, description, created, updated 모두 포함)
-- [ ] **구체적인 Description** 
-  - 20자 이상
+- 명확한 이름 형식 (소문자-하이픈)
+- 완전한 Frontmatter (필수 필드 존재)
+- Description 길이 (20자 이상)
+- 적절한 카테고리 (core/specialized/meta)
+
+#### ✋ 수동 확인 필요
+
+다음 항목은 직접 확인해주세요:
+
+**📋 필수 항목:**
+
+- [ ] **명확한 Description 작성**
   - "Use PROACTIVELY when..." 형식 권장
   - 트리거 조건 명확히 명시
+  - 전문 분야와 구체적 범위 포함
+
 - [ ] **명확한 책임 정의**
   - 주요 책임 (Primary Responsibilities)
   - 부수적 책임 (Secondary Responsibilities)
+
 - [ ] **구체적인 사용 예시** (최소 2개)
   - 실제 사용 시나리오
-  - 입력과 예상 출력
+  - 입력과 예상 출력 포함
+
 - [ ] **명시적인 제한사항**
-  - 하지 말아야 할 것
+  - Agent가 하지 말아야 할 것
   - 다른 Agent에게 위임할 상황
-- [ ] **적절한 카테고리 선택** (core/specialized/meta)
 
-#### 🧪 품질 검증
+**🧪 품질 검증:**
 
-- [ ] **`./bin/validate` 통과** (에러 0개, 경고 최소화)
 - [ ] **로컬 테스트 완료**
   - 실제 프로젝트에 연결해서 테스트
   - Claude Code가 Agent를 올바르게 호출하는지 확인
   - 예상된 동작 수행 확인
+  - 에지 케이스 처리 확인
+
 - [ ] **중복 확인**
   - 기존 Agent와 과도하게 겹치지 않는지
-  - 차별화된 가치가 있는지
+  - 차별화된 가치 제공하는지
 
-#### 📝 선택 항목 (해당 시)
+**📝 선택 항목 (해당 시):**
 
-- [ ] **관련 Agent 명시** (함께 사용하면 좋은 Agent)
-- [ ] **Tool 제한** (보안/안전상 필요한 경우만)
-- [ ] **Model 지정** (기본 sonnet이 아닌 경우만)
-- [ ] **사용 통계** (기존 Agent 개선 시)
+- [ ] 관련 Agent 명시 (함께 사용하면 좋은 Agent)
+- [ ] Tool 제한 (보안/안전상 필요한 경우만)
+- [ ] Model 지정 (기본 sonnet이 아닌 경우만)
+- [ ] 사용 통계 (기존 Agent 개선 시)
 
 ---
 
@@ -177,14 +198,27 @@ Description은 **가장 중요한 부분**입니다. Claude Code가 이를 보�
 description: Use PROACTIVELY when TypeScript files are modified. Expert in type safety, generics, and TypeScript best practices for large codebases.
 ```
 
-명확한 트리거 + 전문 분야 + 구체적 범위
+**설명:**
+- 명확한 트리거 조건 ("when TypeScript files are modified")
+- 전문 분야 명시 ("Expert in type safety, generics...")
+- 구체적 범위 ("large codebases")
 
-**❌ 나쁜 예시:**
+> 💡 **참고**: Agent는 영어로 작성하는 것을 권장합니다. Claude Code가 영어 패턴을 더 정확하게 인식합니다.
+
+**❌ 나쁜 예시 1:**
 ```yaml
 description: TypeScript helper
 ```
 
-모호하고 트리거 조건이 불명확함
+**❌ 나쁜 예시 2:**
+```yaml
+description: Helps with TypeScript code
+```
+
+**문제점:**
+- 트리거 조건 불명확
+- 전문성 부족
+- 범위가 모호함
 
 ### 네이밍 규칙
 
@@ -328,11 +362,11 @@ description: TypeScript helper
 
 ## 체크리스트
 
-- [ ] 네이밍 규칙 준수
-- [ ] Frontmatter 완전함
-- [ ] 예시 포함
-- [ ] 검증 통과
+- [ ] `./bin/validate` 통과
 - [ ] 로컬 테스트 완료
+- [ ] Description 명확
+- [ ] 사용 예시 2개 이상
+- [ ] 제한사항 명시
 ```
 
 ---
@@ -384,12 +418,13 @@ description: TypeScript helper
 
 제한이 필요한 경우만 명시하세요:
 
+**대부분의 경우:**
 ```yaml
-# 모든 도구 상속 (권장)
-tools: Bash, Read, Write
+tools: Bash, Read, Write  # 모든 도구 상속
 ```
+
+**보안이 필요한 경우:**
 ```yaml
-# 안전을 위한 제한
 tools: Read  # 읽기 전용 Agent
 ```
 
