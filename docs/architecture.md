@@ -1,269 +1,282 @@
-# Architecture & Design Philosophy
+# 아키텍처 및 설계 철학
 
-## Core Philosophy
+## 핵심 철학
 
-**"Transforming shattered fragments into a cosmos"**
+**"흩어진 조각들을 우주로 만들다"**
 
-This repository embodies a fundamental principle: every fragment of experience, when properly structured and documented, becomes a reusable asset. Rather than letting knowledge scatter across projects and contexts, we crystallize patterns into agents that can be deployed systematically.
+이 저장소는 하나의 근본 원칙을 구현합니다: 경험의 모든 조각은 적절히 구조화되고 문서화되면 재사용 가능한 자산이 됩니다. 지식이 프로젝트와 맥락 사이에 흩어지도록 두지 않고, 패턴을 체계적으로 배포할 수 있는 Agent로 결정화합니다.
 
-## Design Principles
+---
 
-### 1. Clarity Over Cleverness
+## 설계 원칙
 
-Each agent should be immediately understandable:
-- Clear, descriptive names
-- Explicit trigger conditions
-- Well-documented responsibilities
-- No implicit behavior
+### 1. 명확성 > 영리함
 
-**Why**: An agent that requires explanation is a liability, not an asset.
+각 Agent는 즉시 이해 가능해야 합니다:
+- 명확하고 서술적인 이름
+- 명시적인 트리거 조건
+- 잘 문서화된 책임
+- 암묵적 동작 없음
 
-### 2. Specificity Over Generality
+**이유:** 설명이 필요한 Agent는 자산이 아니라 부채입니다.
 
-Agents should have focused, well-defined scopes:
-- Better to have 10 specific agents than 1 vague one
-- Each agent excels at its domain
-- Clear boundaries prevent overlap
+### 2. 구체성 > 범용성
 
-**Why**: Specialization enables expertise. General-purpose agents become maintenance nightmares.
+Agent는 집중된, 명확히 정의된 범위를 가져야 합니다:
+- 모호한 Agent 1개보다 구체적인 Agent 10개가 낫습니다
+- 각 Agent는 자신의 도메인에서 탁월합니다
+- 명확한 경계가 중복을 방지합니다
 
-### 3. Composability Over Monoliths
+**이유:** 전문화가 전문성을 만듭니다. 범용 Agent는 유지보수 악몽이 됩니다.
 
-Agents should work together:
-- Small, focused units
-- Clear interfaces (via descriptions)
-- Explicit delegation patterns
-- Profile-based combinations
+### 3. 조합 가능성 > 모놀리스
 
-**Why**: Complex workflows emerge from simple, composable parts.
+Agent들은 함께 작동해야 합니다:
+- 작고 집중된 단위
+- 명확한 인터페이스 (description을 통해)
+- 명시적인 위임 패턴
+- Profile 기반 조합
 
-### 4. Evolution Over Perfection
+**이유:** 복잡한 워크플로우는 간단하고 조합 가능한 부품에서 나옵니다.
 
-Structure should adapt to reality:
-- Start simple, add complexity as needed
-- Document changes in evolution-log.md
-- Refactor based on actual usage patterns
-- No premature optimization
+### 4. 진화 > 완벽
 
-**Why**: The best architecture emerges from use, not planning.
+구조는 현실에 적응해야 합니다:
+- 간단하게 시작하고 필요에 따라 복잡성 추가
+- 실제 사용 패턴을 기반으로 리팩토링
+- 조기 최적화 금지
 
-## Repository Structure
+**이유:** 최고의 아키텍처는 계획이 아닌 사용에서 나옵니다.
 
-### `/agents` - The Core Asset
+---
+
+## 저장소 구조
+
+### `/agents` - 핵심 자산
 
 ```
 agents/
-├── _template.md     # Source of truth for agent structure
-├── core/           # Framework-agnostic, universally useful
-├── specialized/    # Domain-specific expertise
-└── meta/          # Self-management and meta-operations
+├── _template.md     # Agent 구조의 원본
+├── core/           # 프레임워크 무관, 보편적으로 유용
+├── specialized/    # 도메인 특화 전문성
+└── meta/          # 자체 관리 및 메타 작업
 ```
 
-**Rationale**:
-- `core/`: These agents work everywhere, no special context needed
-- `specialized/`: These need specific domain knowledge (React, databases, etc.)
-- `meta/`: These manage the repository itself (self-hosting principle)
+**근거:**
+- `core/`: 특별한 컨텍스트 없이 어디서나 작동
+- `specialized/`: 특정 도메인 지식 필요 (React, 데이터베이스 등)
+- `meta/`: 저장소 자체를 관리 (자체 호스팅 원칙)
 
-### `/bin` - Developer Experience
+### `/bin` - 개발자 경험
 
-Unix-style command-line tools without file extensions:
-- `setup`: Project integration
-- `validate`: Quality gates
-- `add-agent`: Scaffolding
-- `stats`: Analytics
+확장자 없는 Unix 스타일 CLI 도구:
+- `setup`: 프로젝트 통합
+- `validate`: 품질 게이트
+- `add-agent`: 스캐폴딩
+- `generate-catalog`: 카탈로그 생성 (예정)
 
-**Rationale**: Commands should feel native, not scripted. No `.sh` extensions, just executable tools.
+**근거:** 명령어는 스크립트가 아니라 네이티브처럼 느껴져야 합니다.
 
-### `/docs` - Thought Process
+### `/docs` - 사고 과정
 
-Not just "what" but "why":
-- `architecture.md`: This file - design decisions
-- `writing-agents.md`: Craft guidelines
-- `automation.md`: Tool descriptions
-- `evolution-log.md`: Change history with reasoning
+"무엇"뿐만 아니라 "왜":
+- `architecture.md`: 이 파일 - 설계 결정
+- `commit-guidelines.md`: 커밋 규칙 빠른 참조
 
-**Rationale**: Future maintainers (including future you) need context, not just code.
+**근거:** 미래의 유지보수자(미래의 나 포함)는 코드뿐만 아니라 맥락이 필요합니다.
 
-### `/profiles` - Composition Patterns
+### `/profiles` - 조합 패턴
 
-Pre-configured agent combinations:
-- `default.json`: Sensible baseline
-- `frontend-full.json`: Complete frontend stack
-- `backend-api.json`: API development focus
+사전 구성된 Agent 조합:
+- `default.json`: 합리적인 기본값
 
-**Rationale**: Common patterns should be one command away.
+**근거:** 일반적인 패턴은 한 명령으로 접근 가능해야 합니다.
 
-## Agent Design Patterns
+---
 
-### Pattern 1: Trigger-Driven
+## Agent 설계 패턴
 
-```markdown
-description: Use PROACTIVELY when [specific condition]
+### 패턴 1: 트리거 기반
+
+```yaml
+description: Use PROACTIVELY when [구체적 조건]
 ```
 
-The description is the interface. Claude Code uses it to decide when to delegate.
+Description이 인터페이스입니다. Claude Code는 이를 사용해 위임 시점을 결정합니다.
 
-### Pattern 2: Clear Scope
+### 패턴 2: 명확한 범위
 
 ```markdown
 ## Responsibilities
-Primary: [one clear goal]
-Secondary: [supporting goals]
+Primary: [하나의 명확한 목표]
+Secondary: [지원 목표]
 
 ## Limitations
-- [what NOT to do]
+- [하지 말아야 할 것]
 ```
 
-Boundaries prevent scope creep and conflicts between agents.
+경계가 범위 확장과 Agent 간 충돌을 방지합니다.
 
-### Pattern 3: Example-Driven
+### 패턴 3: 예시 기반
 
 ```markdown
 ## Examples
-### Example 1: [Concrete Scenario]
-Input: [specific situation]
-Action: [what agent does]
-Output: [expected result]
+### Example 1: [구체적 시나리오]
+Input: [특정 상황]
+Action: [Agent가 하는 일]
+Output: [예상 결과]
 ```
 
-Examples serve as tests and documentation simultaneously.
-
-## Automation Philosophy
-
-### Three Tiers
-
-**Tier 1: Quality Gates** (CI/CD)
-- Must pass before merge
-- Validates structure, naming, completeness
-- Non-negotiable
-
-**Tier 2: Productivity** (Developer Tools)
-- Reduces friction
-- Enables rapid iteration
-- Scaffolding, generation
-
-**Tier 3: Intelligence** (Analytics)
-- Learns from usage
-- Suggests improvements
-- Identifies dead code
-
-### Self-Management Principle
-
-The repository should use its own agents to manage itself:
-- `meta/repo-manager.md` - structure validation
-- `meta/agent-creator.md` - new agent generation
-- Claude Code operating on this repository
-
-**Why**: If our tools aren't good enough for us, they're not good enough.
-
-## Anti-Patterns
-
-### ❌ Avoid
-
-1. **Kitchen Sink Agents**: One agent that does everything
-2. **Implicit Behavior**: Undocumented side effects
-3. **Copy-Paste Agents**: Near-duplicate agents with slight variations
-4. **Stale Documentation**: Docs that don't match reality
-5. **Premature Abstraction**: Complex structure before proven need
-
-### ✅ Instead
-
-1. **Focused Specialists**: Each agent has one clear job
-2. **Explicit Interfaces**: Description tells the whole story
-3. **DRY via Composition**: Combine agents, don't duplicate
-4. **Auto-Generated Docs**: Let tools maintain catalogs
-5. **Grow Organically**: Add structure when patterns emerge
-
-## Evolution Strategy
-
-### Phase 1: Foundation (Current)
-- Basic structure
-- Core agents
-- Essential tooling
-- Documentation
-
-### Phase 2: Refinement (After 1-2 months)
-- Identify usage patterns
-- Restructure based on data
-- Add specialized agents
-- Improve automation
-
-### Phase 3: Maturity (After 3-6 months)
-- Stable structure
-- Comprehensive coverage
-- Advanced analytics
-- Community contributions
-
-## Measuring Success
-
-This repository succeeds when:
-
-1. **Time to First Agent** < 5 minutes
-   - Quick setup, immediate value
-
-2. **Agent Creation** < 10 minutes
-   - From idea to working agent
-
-3. **Zero Documentation Debt**
-   - Auto-generated catalogs always current
-
-4. **Self-Sufficiency**
-   - Repository manages itself via its own agents
-
-5. **Portfolio Value**
-   - Demonstrates systematic thinking and architecture skills
-
-## Design Decisions
-
-### Why Markdown + YAML Frontmatter?
-
-- Human-readable
-- Git-friendly (diffs, merges)
-- Editor support everywhere
-- No build step required
-
-### Why Bash Scripts?
-
-- Universal on Unix systems
-- No dependencies
-- Clear, auditable
-- Easy to modify
-
-### Why JSON for Profiles?
-
-- Machine-readable
-- Extensible
-- Standard format
-- Easy to validate
-
-### Why Separate core/specialized/meta?
-
-- Clear mental model
-- Prevents mixing concerns
-- Easy to navigate
-- Scales well
-
-## Future Considerations
-
-### Potential Additions
-
-- `/templates` - Project scaffolding templates
-- `/integrations` - IDE plugins, Git hooks
-- `/benchmarks` - Agent effectiveness metrics
-- `/community` - Contributed agents
-
-### Open Questions
-
-- Version management for agents?
-- Agent dependency graphs?
-- Performance metrics?
-- A/B testing framework?
-
-These will be addressed as real needs emerge.
+예시는 테스트이자 문서화를 동시에 수행합니다.
 
 ---
 
-**Remember**: Architecture serves the work, not the other way around. When in doubt, ship something simple and iterate based on reality.
+## 자동화 철학
+
+### 3단계 계층
+
+**계층 1: 품질 게이트** (CI/CD)
+- 머지 전 반드시 통과
+- 구조, 네이밍, 완전성 검증
+- 협상 불가
+
+**계층 2: 생산성** (개발 도구)
+- 마찰 감소
+- 빠른 반복 가능
+- 스캐폴딩, 생성
+
+**계층 3: 지능** (분석)
+- 사용 패턴 학습
+- 개선 제안
+- 사용되지 않는 코드 식별
+
+### 자체 관리 원칙
+
+저장소는 자신의 Agent를 사용해 자신을 관리해야 합니다:
+- `meta/repo-manager.md` - 구조 검증
+- Claude Code가 이 저장소에서 작동
+
+**이유:** 우리 도구가 우리에게 충분히 좋지 않다면, 다른 사람에게도 충분히 좋지 않습니다.
 
 ---
+
+## 안티패턴
+
+### ❌ 피해야 할 것
+
+1. **만능 Agent**: 모든 것을 하는 하나의 Agent
+2. **암묵적 동작**: 문서화되지 않은 부작용
+3. **복붙 Agent**: 약간의 차이만 있는 거의 동일한 Agent들
+4. **오래된 문서**: 현실과 맞지 않는 문서
+5. **조기 추상화**: 필요가 증명되기 전의 복잡한 구조
+
+### ✅ 대신 해야 할 것
+
+1. **집중된 전문가**: 각 Agent는 하나의 명확한 작업
+2. **명시적 인터페이스**: Description이 모든 것을 설명
+3. **조합을 통한 DRY**: 중복하지 말고 조합
+4. **자동 생성 문서**: 도구가 카탈로그 유지
+5. **유기적 성장**: 패턴이 나타날 때 구조 추가
+
+---
+
+## 진화 전략
+
+### Phase 1: 기초 (현재)
+- 기본 구조
+- 핵심 Agent
+- 필수 도구
+- 문서화
+
+### Phase 2: 개선 (1-2개월 후)
+- 사용 패턴 식별
+- 데이터 기반 재구조화
+- 특화 Agent 추가
+- 자동화 개선
+
+### Phase 3: 성숙 (3-6개월 후)
+- 안정적 구조
+- 포괄적 커버리지
+- 고급 분석
+- 커뮤니티 기여
+
+---
+
+## 성공 측정
+
+이 저장소는 다음 조건에서 성공합니다:
+
+1. **첫 Agent까지 소요 시간** < 5분
+   - 빠른 설정, 즉각적 가치
+
+2. **Agent 생성** < 10분
+   - 아이디어에서 작동하는 Agent까지
+
+3. **문서 부채 제로**
+   - 자동 생성 카탈로그가 항상 최신
+
+4. **자급자족**
+   - 저장소가 자신의 Agent를 통해 자신을 관리
+
+5. **포트폴리오 가치**
+   - 체계적 사고와 아키텍처 기술 시연
+
+---
+
+## 설계 결정
+
+### 왜 Markdown + YAML Frontmatter?
+
+- 사람이 읽기 쉬움
+- Git 친화적 (diff, merge)
+- 모든 곳에서 에디터 지원
+- 빌드 단계 불필요
+
+### 왜 Bash 스크립트?
+
+- Unix 시스템에서 보편적
+- 의존성 없음
+- 명확하고 감사 가능
+- 수정하기 쉬움
+
+### 왜 Profile에 JSON?
+
+- 기계 판독 가능
+- 확장 가능
+- 표준 형식
+- 검증하기 쉬움
+
+### 왜 core/specialized/meta 분리?
+
+- 명확한 멘탈 모델
+- 관심사 혼합 방지
+- 탐색하기 쉬움
+- 확장성 좋음
+
+---
+
+## 미래 고려사항
+
+### 잠재적 추가 사항
+
+- `/templates` - 프로젝트 스캐폴딩 템플릿
+- `/integrations` - IDE 플러그인, Git hooks
+- `/benchmarks` - Agent 효과성 지표
+- `/community` - 기여된 Agent
+
+### 열린 질문들
+
+- Agent 버전 관리?
+- Agent 의존성 그래프?
+- 성능 지표?
+- A/B 테스팅 프레임워크?
+
+이것들은 실제 필요가 나타날 때 다룰 것입니다.
+
+---
+
+**기억하세요**: 아키텍처는 작업을 위해 존재하지, 그 반대가 아닙니다. 확신이 없다면 간단한 것을 배포하고 현실에 기반해 반복하세요.
+
+---
+
 **Last Updated**: 2026-01-14
