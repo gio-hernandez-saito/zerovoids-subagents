@@ -56,3 +56,6 @@ If validation fails, you'll see a helpful error message.
 - **Clarity**: Purpose is immediately clear
 - **Automation**: Can generate changelogs
 - **Standards**: Follows conventional commits loosely
+
+---
+**Last Updated**: 2026-01-14
