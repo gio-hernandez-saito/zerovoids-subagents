@@ -44,8 +44,8 @@ jobs:
       - name: Commit and push to idea-bank
         run: |
           cd idea-bank
-          git config user.name "Idea Generator Bot"
-          git config user.email "bot@zerovoids.dev"
+          git config user.name "Another Zerovoids"
+          git config user.email "gio.hernandez.saito@gmail.com"
           git add .
           
           # 변경사항 있을 때만 커밋
