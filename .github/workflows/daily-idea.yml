@@ -39,7 +39,7 @@ jobs:
         run: pnpm install
 
       - name: Generate idea
-        run: pnpm agent:idea --output ./idea-bank/ideas
+        run: pnpm agent:idea-generator-critic --output ./idea-bank/ideas
 
       - name: Commit and push to idea-bank
         run: |
