@@ -222,8 +222,14 @@ async function saveResult(
   result: GenerationResult,
   outputDir: string
 ): Promise<string> {
-  await fs.mkdir(outputDir, { recursive: true });
-  const outputPath = path.join(outputDir, result.filename);
+  // Create YYYY/MM folder structure
+  const now = new Date();
+  const year = now.getFullYear().toString();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const fullOutputDir = path.join(outputDir, year, month);
+  
+  await fs.mkdir(fullOutputDir, { recursive: true });
+  const outputPath = path.join(fullOutputDir, result.filename);
   await fs.writeFile(outputPath, result.content, "utf-8");
   return outputPath;
 }

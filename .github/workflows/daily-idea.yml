@@ -1,0 +1,57 @@
+name: Daily Idea Generation
+
+on:
+  schedule:
+    # 매일 KST 오전 9시 (UTC 0시)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 수동 실행 가능
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout subagents
+        uses: actions/checkout@v4
+
+      - name: Checkout idea-bank
+        uses: actions/checkout@v4
+        with:
+          repository: zerovoids/zerovoids-idea-bank
+          path: idea-bank
+          token: ${{ secrets.IDEA_BANK_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate idea
+        run: pnpm agent:idea --output ./idea-bank/ideas
+
+      - name: Commit and push to idea-bank
+        run: |
+          cd idea-bank
+          git config user.name "Idea Generator Bot"
+          git config user.email "bot@zerovoids.dev"
+          git add .
+          
+          # 변경사항 있을 때만 커밋
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: daily idea $(date +%Y-%m-%d)"
+            git push
+          fi
