@@ -21,7 +21,7 @@ jobs:
       - name: Checkout idea-bank
         uses: actions/checkout@v4
         with:
-          repository: zerovoids/zerovoids-idea-bank
+          repository: gio-hernandez-saito/zerovoids-idea-bank
           path: idea-bank
           token: ${{ secrets.IDEA_BANK_TOKEN }}
 
