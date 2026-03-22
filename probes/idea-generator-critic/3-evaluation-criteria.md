@@ -8,18 +8,19 @@
 
 ### Core Principle
 
-**Quality over quantity**. Better to generate 1 excellent idea per week than 7 mediocre ones per day.
+**Quality AND diversity**. Better to generate 1 excellent, distinct idea per week than 7 mediocre or repetitive ones per day.
 
 ### Evaluation Goals
 
 - Filter out generic/trivial ideas
 - Encourage unique angles
 - Ensure buildability
-- Maintain high standards
+- Prevent duplicate concepts from polluting the bank
+- Maintain high standards across all 8 dimensions
 
 ---
 
-## 📊 The 7 Dimensions
+## 📊 The 8 Dimensions
 
 All dimensions scored **1-10**, where:
 
@@ -180,7 +181,7 @@ All dimensions scored **1-10**, where:
 #### Key Questions
 - Would anyone pay for this?
 - What's the business model?
-- Are there successful comparable?
+- Are there successful comparables?
 
 ---
 
@@ -194,7 +195,7 @@ All dimensions scored **1-10**, where:
 - Novel technical challenge
 - Deep learning opportunity
 - Creative problem-solving
-- Examples: 3D graphics programming, Real-time data processing, Algorithm design
+- Examples: 3D graphics programming, Real-time data processing, Algorithm design, WebGPU compute shaders
 
 **7-8 Interesting**
 - Some new techniques
@@ -294,6 +295,49 @@ All dimensions scored **1-10**, where:
 
 ---
 
+### 8. Distinctness (기존 대비 차별성) — Weight: 18%
+
+**What it measures**: How different is this from ideas already in the bank?
+
+**CRITICAL**: This is the most important dimension for maintaining idea bank quality. Score inflation here directly produces duplicates.
+
+#### Scoring Guide
+
+**9-10 Completely Novel**
+- Different domain from all existing ideas
+- Problem space never addressed before
+- Would surprise someone reading the existing bank
+- Examples: First gaming-related idea when bank is all dev tools
+
+**7-8 Meaningfully Different**
+- Same broad field but fundamentally different problem
+- Different target user or context
+- Shares some tech but distinct purpose
+- Examples: Both use D3.js but one is sports viz and other is code analysis
+
+**4-6 Somewhat Similar**
+- Overlaps with existing idea in domain AND approach
+- Different enough to not be a "duplicate" but clearly related
+- Examples: "Component analyzer" vs "Component profiler" (same core concept)
+
+**1-3 Duplicate**
+- Essentially the same idea as one already in the bank
+- Same problem, same tech, same approach, different words
+- Examples: "Color Space Converter Library" generated for the 5th time
+
+#### Key Questions
+- Does an idea with similar title/tags already exist?
+- Would a human consider this a duplicate?
+- Am I just rewording a previous idea?
+- What is genuinely NEW about this compared to existing bank?
+
+#### Auto-Fail Conditions
+- If title word overlap with ANY existing idea > 50%: score MUST be <= 4
+- If same subcategory has 3+ ideas already: score MUST be <= 6
+- If core problem statement matches existing idea: score = 1 (immediate FAIL)
+
+---
+
 ## 🎯 Pass/Fail Criteria
 
 ### Passing Conditions
@@ -313,15 +357,17 @@ An idea **FAILS** if:
 - `total_score < 7.0` AND no excellence criteria met
 - `originality <= 4` (too generic)
 - `feasibility <= 3` (unrealistic to build)
+- `distinctness <= 3` (too similar to existing idea — immediate FAIL, no refinement)
 - ALL scores <= 5 (mediocre across board)
 
 ### Edge Cases
 
-| Scenario                                     | Decision | Reason                                            |
-|----------------------------------------------|----------|---------------------------------------------------|
-| total = 7.2, feasibility = 3                 | FAIL     | Can't build it, other scores don't matter         |
-| total = 6.8, originality = 10, portfolio = 9 | PASS     | Unique and impressive outweighs average elsewhere |
-| All scores = 6, total = 6.0                  | FAIL     | Too mediocre, won't be interesting                |
+| Scenario                                       | Decision | Reason                                              |
+|------------------------------------------------|----------|-----------------------------------------------------|
+| total = 7.2, feasibility = 3                   | FAIL     | Can't build it, other scores don't matter           |
+| total = 6.8, originality = 10, tech_interest = 9 | PASS   | Unique and impressive outweighs average elsewhere   |
+| All scores = 6, total = 6.0                    | FAIL     | Too mediocre, won't be interesting                  |
+| total = 7.5, distinctness = 2                  | FAIL     | Near-duplicate destroys bank quality                |
 
 ---
 
@@ -331,13 +377,14 @@ An idea **FAILS** if:
 
 ```typescript
 total_score = (
-  originality * 0.15 +
-  feasibility * 0.20 +
-  market_need * 0.15 +
-  monetization_potential * 0.10 +
-  tech_interest * 0.15 +
-  learning_value * 0.15 +
-  open_source_value * 0.10
+  originality * 0.12 +
+  feasibility * 0.18 +
+  market_need * 0.12 +
+  monetization_potential * 0.08 +
+  tech_interest * 0.12 +
+  learning_value * 0.12 +
+  open_source_value * 0.08 +
+  distinctness * 0.18
 )
 ```
 
@@ -345,26 +392,28 @@ total_score = (
 
 | Dimension              | Weight | Reason                                       |
 |------------------------|--------|----------------------------------------------|
-| feasibility            | 20%    | Can't build it = scores don't matter         |
-| originality            | 15%    | Makes it worth building                      |
-| tech_interest          | 15%    | Makes it worth building                      |
-| learning_value         | 15%    | Personal growth opportunity                  |
-| market_need            | 15%    | Nice but not essential for personal projects |
-| monetization_potential | 10%    | Bonus, not requirement                       |
-| open_source_value      | 10%    | Bonus, not requirement                       |
+| feasibility            | 18%    | Can't build it = scores don't matter         |
+| distinctness           | 18%    | Duplicates destroy bank quality              |
+| originality            | 12%    | Makes it worth building                      |
+| tech_interest          | 12%    | Makes it worth building                      |
+| learning_value         | 12%    | Personal growth opportunity                  |
+| market_need            | 12%    | Nice but not essential for personal projects |
+| monetization_potential | 8%     | Bonus, not requirement                       |
+| open_source_value      | 8%     | Bonus, not requirement                       |
 
 ### Example Calculation
 
 | Dimension              | Score | Weight | Weighted |
 |------------------------|-------|--------|----------|
-| originality            | 8     | 0.15   | 1.20     |
-| feasibility            | 7     | 0.20   | 1.40     |
-| market_need            | 6     | 0.15   | 0.90     |
-| monetization_potential | 5     | 0.10   | 0.50     |
-| tech_interest          | 9     | 0.15   | 1.35     |
-| learning_value         | 8     | 0.15   | 1.20     |
-| open_source_value      | 7     | 0.10   | 0.70     |
-| **Total**              |       |        | **7.25** |
+| originality            | 8     | 0.12   | 0.96     |
+| feasibility            | 7     | 0.18   | 1.26     |
+| market_need            | 6     | 0.12   | 0.72     |
+| monetization_potential | 5     | 0.08   | 0.40     |
+| tech_interest          | 9     | 0.12   | 1.08     |
+| learning_value         | 8     | 0.12   | 0.96     |
+| open_source_value      | 7     | 0.08   | 0.56     |
+| distinctness           | 9     | 0.18   | 1.62     |
+| **Total**              |       |        | **7.56** |
 
 Result: **PASS** (total >= 7.0)
 
@@ -376,20 +425,21 @@ Result: **PASS** (total >= 7.0)
 
 **Idea**: Metroidvania Code Explorer
 
-| Dimension              | Score   | Note                   |
-|------------------------|---------|------------------------|
-| originality            | 10      | Never seen before      |
-| feasibility            | 6       | Challenging but doable |
-| market_need            | 5       | Niche need             |
-| monetization_potential | 3       | Probably free          |
-| tech_interest          | 10      | Extremely interesting  |
+| Dimension              | Score   | Note                      |
+|------------------------|---------|---------------------------|
+| originality            | 10      | Never seen before         |
+| feasibility            | 6       | Challenging but doable    |
+| market_need            | 5       | Niche need                |
+| monetization_potential | 3       | Probably free             |
+| tech_interest          | 10      | Extremely interesting     |
 | learning_value         | 9       | Deep learning opportunity |
-| open_source_value      | 7       | Educational value      |
-| **Total**              | **7.4** |                        |
+| open_source_value      | 7       | Educational value         |
+| distinctness           | 10      | First of its kind in bank |
+| **Total**              | **7.5** |                           |
 
 **Result**: PASS (Option 2: originality 10 + tech_interest 10)
 
-**Reasoning**: Unique and fascinating to build outweighs practical concerns
+**Reasoning**: Unique and fascinating to build, completely distinct from existing ideas
 
 ---
 
@@ -406,16 +456,15 @@ Result: **PASS** (total >= 7.0)
 | tech_interest          | 7       | D3 practice        |
 | learning_value         | 6       | Moderate growth    |
 | open_source_value      | 6       | Some value         |
-| **Total**              | **6.5** |                    |
+| distinctness           | 8       | Different from bank's existing tools |
+| **Total**              | **6.7** |                    |
 
 **Result**: FAIL (< 7.0 and no excellence criteria met)
-
-**Reasoning**: Too middle-of-the-road, nothing stands out
 
 **After Refinement** (Add real-time pitch prediction using ML):
 - tech_interest: 7 → 9
 - learning_value: 6 → 8
-- new_total: 7.1
+- new_total: 7.2
 - **New Result**: PASS
 
 ---
@@ -433,7 +482,8 @@ Result: **PASS** (total >= 7.0)
 | tech_interest          | 3       | Boring           |
 | learning_value         | 2       | Nothing new      |
 | open_source_value      | 1       | Pointless        |
-| **Total**              | **3.1** |                  |
+| distinctness           | 1       | Exact duplicate of common project |
+| **Total**              | **2.8** |                  |
 
 **Result**: FAIL (multiple conditions met)
 
@@ -441,14 +491,39 @@ Result: **PASS** (total >= 7.0)
 
 ---
 
+### Example 4: Fail on Distinctness
+
+**Idea**: Color Space Converter Library (bank already has 3 similar)
+
+| Dimension              | Score   | Note                         |
+|------------------------|---------|------------------------------|
+| originality            | 5       | Some novelty                 |
+| feasibility            | 9       | Very buildable               |
+| market_need            | 6       | Real use case                |
+| monetization_potential | 3       | Open source                  |
+| tech_interest          | 6       | Familiar territory           |
+| learning_value         | 5       | Known domain                 |
+| open_source_value      | 7       | Community need               |
+| distinctness           | 2       | Essentially duplicate of existing bank entry |
+| **Total**              | **5.5** |                              |
+
+**Result**: IMMEDIATE FAIL — distinctness <= 3, no refinement, generate new concept
+
+---
+
 ## 🔍 Self-Evaluation Checklist
 
-Before finalizing scores, agent should verify:
+Before finalizing scores, probe should verify:
 
 ### Honesty Check
 - [ ] Am I inflating scores to meet threshold?
 - [ ] Are these scores justified?
 - [ ] Would a human agree?
+
+### Distinctness Check
+- [ ] Have I actually scanned the existing idea bank?
+- [ ] Does any existing idea share the core concept?
+- [ ] Am I scoring distinctness accurately (not inflating to avoid restart)?
 
 ### Consistency Check
 - [ ] Do scores align with descriptions?
@@ -459,6 +534,31 @@ Before finalizing scores, agent should verify:
 - [ ] Am I giving 7s just to pass?
 - [ ] Do 9-10 scores truly deserve it?
 - [ ] Are 1-3 scores appropriately harsh?
+- [ ] Is distinctness scored independently of how much I like the idea?
+
+---
+
+## 📊 Score Distribution Health
+
+### Warning Signs
+- If you are about to give a score of 7.3: STOP and re-evaluate
+- More than 30% of ideas at the same score = system failure
+- Scores should vary naturally: some 6.x, some 7.x, some 8.x+
+
+### Expected Distribution (healthy)
+| Range | Expected % | Meaning |
+|-------|-----------|---------|
+| < 5.0 | ~10% | Poor ideas, should fail |
+| 5.0-6.9 | ~30% | Below threshold, may fail |
+| 7.0-7.9 | ~35% | Passing, good quality |
+| 8.0-8.9 | ~20% | Strong ideas |
+| 9.0+ | ~5% | Exceptional |
+
+### If You're Gaming
+If ALL your scores cluster around 7.0-7.5:
+- You are adjusting scores to pass, not evaluating honestly
+- A genuinely bad idea should score 4-5, not 6.8
+- A genuinely great idea should score 8-9, not 7.3
 
 ---
 
@@ -466,7 +566,7 @@ Before finalizing scores, agent should verify:
 
 ### Better to Fail Than Settle
 
-> 1 excellent idea > 10 mediocre ideas
+> 1 excellent distinct idea > 10 mediocre or repetitive ideas
 
 Don't lower standards to increase output. The goal is **curated quality**.
 
@@ -475,21 +575,23 @@ Don't lower standards to increase output. The goal is **curated quality**.
 - Don't sugarcoat problems
 - Celebrate genuine strengths
 - Fail ideas that deserve to fail
+- Reject near-duplicates without apology
 
 ### Growth Mindset
 - Each failure teaches what works
 - Refinement improves pattern recognition
 - Over time, first attempts improve
+- Scanning the bank before generating prevents wasted effort
 
 ---
 
 ## 🔗 Related Documents
 
-- `0-context.md`: Informs scoring context (user preferences)
+- `0-context.md`: Informs scoring context (user preferences, diversity rules)
 - `1-frontmatter-spec.md`: Defines evaluation fields structure
 - `2-output-template.md`: Documents that pass get formatted here
 - `4-refinement-protocol.md`: Detailed refinement strategies
 
 ---
 
-**Last Updated**: 2026-01-20
+**Last Updated**: 2026-03-23

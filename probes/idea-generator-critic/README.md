@@ -1,15 +1,15 @@
-# Idea Generator & Critic Agent
+# Idea Generator & Critic Probe
 
-> AI가 프로젝트 아이디어를 생성하고, 스스로 평가하며, 기준을 통과할 때까지 개선하는 자동화 Agent
+> AI가 프로젝트 아이디어를 생성하고, 스스로 평가하며, 기준을 통과할 때까지 개선하는 자동화 Probe
 
 ---
 
 ## 📖 개요
 
-이 Agent는 zerovoids-subagents의 첫 번째 실전 Agent로, 다음을 수행합니다:
+이 Probe는 zerovoids-cosmos의 첫 번째 실전 Probe로, 다음을 수행합니다:
 
 1. **생성**: 프로젝트 아이디어를 자동으로 생성
-2. **평가**: 7가지 기준으로 품질 평가 (7각형 평가)
+2. **평가**: 8가지 기준으로 품질 평가 (8각형 평가)
 3. **개선**: 기준 미달 시 자체적으로 아이디어 개선 (최대 3회)
 4. **출력**: 정형화된 Markdown 문서로 저장
 
@@ -38,13 +38,14 @@ cp .env.example .env
 
 ```bash
 # 기본 실행
-pnpm agent:idea
+pnpm run probe:idea-generator-critic
 
 # 옵션
-pnpm agent:idea --output ./my-ideas/  # 출력 경로 지정
-pnpm agent:idea --dry-run             # 저장 없이 테스트
-pnpm agent:idea --verbose             # 상세 로그
-pnpm agent:idea --json                # JSON 출력 (CI용)
+pnpm run probe:idea-generator-critic --output ./my-ideas/         # 출력 경로 지정
+pnpm run probe:idea-generator-critic --ideas-dir ./ideas/         # 기존 아이디어 디렉토리 지정
+pnpm run probe:idea-generator-critic --dry-run                    # 저장 없이 테스트
+pnpm run probe:idea-generator-critic --verbose                    # 상세 로그
+pnpm run probe:idea-generator-critic --json                       # JSON 출력 (CI용)
 ```
 
 ---
@@ -56,10 +57,10 @@ pnpm agent:idea --json                # JSON 출력 (CI용)
 | `0-context.md` | 유저 페르소나, 스킬, 관심사 정의 | ✅ 완료 |
 | `1-frontmatter-spec.md` | YAML 메타데이터 스펙 | ✅ 완료 |
 | `2-output-template.md` | 결과물 마크다운 템플릿 | ✅ 완료 |
-| `3-evaluation-criteria.md` | 7개 평가 기준 상세 | ✅ 완료 |
+| `3-evaluation-criteria.md` | 8개 평가 기준 상세 | ✅ 완료 |
 | `4-refinement-protocol.md` | 자체 개선 프로토콜 | ✅ 완료 |
 | `5-deployment.md` | GitHub Actions 자동화 | ✅ 완료 |
-| `agent.md` | 최종 Agent 정의 | ✅ 완료 |
+| `agent.md` | 최종 Probe 정의 | ✅ 완료 |
 | `run.ts` | 실행 스크립트 | ✅ 완료 |
 
 ---
@@ -81,9 +82,9 @@ pnpm agent:idea --json                # JSON 출력 (CI용)
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────┐
-│  3. Evaluation (7각형 평가)                              │
+│  3. Evaluation (8각형 평가)                              │
 │  - 독창성, 실현가능성, 시장필요성, 수익화가능성          │
-│  - 기술적흥미, 학습가치, 오픈소스가치                    │
+│  - 기술적흥미, 학습가치, 오픈소스가치, 차별성            │
 └────────────────┬────────────────────────────────────────┘
                  │
                  ▼
@@ -104,23 +105,25 @@ pnpm agent:idea --json                # JSON 출력 (CI용)
 
 ---
 
-## 📊 평가 기준 (7각형)
+## 📊 평가 기준 (8각형)
 
 | Dimension | Weight | Description |
 |-----------|--------|-------------|
-| originality | 15% | 독창성 - 얼마나 새로운가? |
-| feasibility | 20% | 실현가능성 - 2-4주 내 가능? |
-| market_need | 15% | 시장 필요성 - 실제 문제 해결? |
-| monetization_potential | 10% | 수익화 가능성 |
-| tech_interest | 15% | 기술적 흥미 - 만들기 재밌나? |
-| learning_value | 15% | 학습 가치 - 얼마나 성장할 수 있나? |
-| open_source_value | 10% | 오픈소스 가치 |
+| originality | 12% | 독창성 - 얼마나 새로운가? |
+| feasibility | 18% | 실현가능성 - 2-4주 내 가능? |
+| market_need | 12% | 시장 필요성 - 실제 문제 해결? |
+| monetization_potential | 8% | 수익화 가능성 |
+| tech_interest | 12% | 기술적 흥미 - 만들기 재밌나? |
+| learning_value | 12% | 학습 가치 - 얼마나 성장할 수 있나? |
+| open_source_value | 8% | 오픈소스 가치 |
+| distinctness | 18% | 차별성 - 기존 아이디어와 얼마나 다른가? |
 
 ### Pass 조건
 
 - `total >= 7.0` OR
 - `(originality >= 8 AND tech_interest >= 8)` OR
-- `(learning_value >= 9 AND feasibility >= 7)`
+- `(learning_value >= 9 AND feasibility >= 7)` OR
+- `(feasibility >= 8 AND market_need >= 8) AND (total_score >= 6.5)`
 
 ---
 
@@ -130,14 +133,14 @@ pnpm agent:idea --json                # JSON 출력 (CI용)
 
 ```
 output/
-└── 2026-01-15-metroidvania-code-explorer.md
+└── 0001-metroidvania-code-explorer.md
 ```
 
 ### 파일 내용
 
 ```markdown
 ---
-id: idea-2026-01-15-001
+id: idea-0001
 title: "Metroidvania Code Explorer"
 generated: 2026-01-15T09:00:00+09:00
 category: visualization
@@ -152,7 +155,8 @@ evaluation:
   tech_interest: 10
   learning_value: 9
   open_source_value: 7
-  total: 7.4
+  distinctness: 10
+  total: 7.5
   iterations: 1
   status: pass
 
@@ -190,10 +194,10 @@ estimated_time: 3-4 weeks
 
 ```bash
 # Dry run으로 테스트
-pnpm agent:idea --dry-run --verbose
+pnpm run probe:idea-generator-critic --dry-run --verbose
 
 # JSON 출력 확인
-pnpm agent:idea --json | jq .
+pnpm run probe:idea-generator-critic --json | jq .
 ```
 
 ---
@@ -216,4 +220,4 @@ pnpm agent:idea --json | jq .
 
 ---
 
-**Last Updated**: 2026-01-17
+**Last Updated**: 2026-03-23
