@@ -24,13 +24,13 @@ for file in $changed_md_files; do
   
   # Update frontmatter 'updated:' field
   if grep -q "^updated:" "$file"; then
-    sed -i "s/^updated: .*/updated: $today/" "$file"
+    sed -i '' "s/^updated: .*/updated: $today/" "$file"
     updated=true
   fi
   
   # Update body '**Last Updated**: YYYY-MM-DD'
   if grep -q "^\*\*Last Updated\*\*: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$" "$file"; then
-    sed -i "s/^\*\*Last Updated\*\*: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$/**Last Updated**: $today/" "$file"
+    sed -i '' "s/^\*\*Last Updated\*\*: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$/**Last Updated**: $today/" "$file"
     updated=true
   fi
   

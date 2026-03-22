@@ -9,7 +9,7 @@
 ```yaml
 ---
 # Identification
-id: idea-{YYYY-MM-DD}-{NNN}
+id: idea-{NNNN}
 title: "{Concise, descriptive title}"
 generated: {ISO 8601 timestamp with timezone}
 
@@ -33,7 +33,8 @@ evaluation:
   tech_interest: {N}            # Technical intrigue
   learning_value: {N}           # Personal growth potential
   open_source_value: {N}        # Community benefit
-  
+  distinctness: {N}             # How different from existing ideas
+
   total: {N.N}                  # Weighted average
   iterations: {N}               # Refinement rounds
   status: pass | fail           # Final result
@@ -52,20 +53,20 @@ inspiration_source: {where idea came from}
 
 #### `id`
 ```yaml
-format: "idea-YYYY-MM-DD-NNN"
-example: "idea-2026-01-15-001"
+format: "idea-NNNN"
+example: "idea-0001"
 
 rules:
-  - YYYY-MM-DD: Generation date
-  - NNN: Sequential number (001, 002, ...)
-  - Unique per day
-  - Zero-padded to 3 digits
+  - NNNN: Sequential index across all ideas (global, not per-day)
+  - Zero-padded to 4 digits
+  - Unique across the entire bank
+  - Assigned at save time (next available number)
 ```
 
 #### `title`
 ```yaml
 format: "Short, Descriptive Title"
-example: "Monorepo Insight Engine"
+example: "Metroidvania Code Explorer"
 
 rules:
   - 3-8 words
@@ -77,7 +78,7 @@ rules:
 good:
   - "Baseball Stats Visualizer"
   - "MCP Workflow Automator"
-  - "Color Space Converter"
+  - "WebGPU Particle Simulator"
 
 bad:
   - "New App" (too generic)
@@ -120,6 +121,7 @@ rules:
   - Pick ONE primary category
   - Most specific applicable
   - Use subcategory for nuance
+  - Prefer underrepresented categories (check bank distribution)
 ```
 
 #### `subcategory` (optional)
@@ -127,17 +129,21 @@ rules:
 examples:
   - category: visualization
     subcategory: baseball-analytics
-  
+
   - category: automation
     subcategory: mcp-server
-  
+
   - category: frontend
     subcategory: react-native
+
+  - category: experimental
+    subcategory: webgpu
 
 rules:
   - More specific than category
   - 1-3 words, hyphenated
   - Only when truly distinct
+  - If subcategory has 3+ ideas already: pick a different subcategory
 ```
 
 #### `difficulty`
@@ -148,21 +154,21 @@ levels:
     - Minimal architecture decisions
     - 1-2 days for experienced dev
     - Examples: CLI tool, data formatter
-  
+
   intermediate:
     - Moderate complexity
     - Some architectural planning
     - Multiple components/modules
     - 1-2 weeks for experienced dev
     - Examples: Data viz dashboard, MCP server
-  
+
   advanced:
     - Complex architecture
     - Performance considerations
     - Multiple technologies integration
     - 2-4 weeks for experienced dev
     - Examples: Real-time multiplayer, 3D engine
-  
+
   expert:
     - Research-level problems
     - Novel algorithms/approaches
@@ -192,6 +198,7 @@ good:
   - [metroidvania, game-mechanics, react]
   - [mcp, automation, cli, typescript]
   - [color-theory, accessibility, design-system]
+  - [webgpu, particle-system, simulation]
 
 bad:
   - "[cool, awesome, great]" # subjective
@@ -246,11 +253,13 @@ categories:
   - Build: Vite, Webpack, Turbopack
   - Testing: Vitest, Playwright
   - Styling: Tailwind, CSS Modules
+  - Emerging: WebGPU, WASM, WebTransport
 
 good:
   - [React Native, TypeScript, MCP]
   - [Vue 3, D3.js, Vitest]
   - [Svelte, Three.js, WebGL]
+  - [WebGPU, TypeScript, Vite]
 
 avoid:
   - Too generic: [JavaScript, HTML, CSS]
@@ -273,6 +282,8 @@ common:
   - JavaScript
   - Python (automation)
   - CSS/SCSS (if significant styling)
+  - WGSL (if WebGPU)
+  - GLSL (if WebGL shaders)
 ```
 
 ---
@@ -480,6 +491,34 @@ factors:
   - Maintenance burden
 ```
 
+#### `distinctness` (1-10)
+```yaml
+measures: How different is this from existing ideas in the bank?
+
+high_score (8-10):
+  - Completely different domain from all existing ideas
+  - Novel problem that hasn't been addressed
+  - Unique combination never attempted
+  - Would surprise someone reading the existing bank
+
+medium_score (5-7):
+  - Same broad domain but fundamentally different approach
+  - Different target user or use case
+  - Shares some tech stack but solves different problem
+  - Different enough that a human wouldn't call it a duplicate
+
+low_score (1-4):
+  - Very similar to an existing idea
+  - Same problem, slightly different framing
+  - Would be seen as a duplicate by a human reader
+  - Core concept already present in the bank
+
+auto_fail_conditions:
+  - Title word overlap with ANY existing idea > 50%: score MUST be <= 4
+  - Same subcategory has 3+ ideas already: score MUST be <= 6
+  - Core problem statement matches existing idea: score = 1 (immediate FAIL)
+```
+
 ---
 
 ### Evaluation Metadata
@@ -487,31 +526,33 @@ factors:
 #### `total`
 ```yaml
 format: N.N (one decimal)
-calculation: Weighted average of 7 scores
+calculation: Weighted average of 8 scores
 
 weights:
-  originality: 15%
-  feasibility: 20%
-  market_need: 15%
-  monetization_potential: 10%
-  tech_interest: 15%
-  portfolio_value: 15%
-  open_source_value: 10%
+  originality: 12%
+  feasibility: 18%
+  market_need: 12%
+  monetization_potential: 8%
+  tech_interest: 12%
+  learning_value: 12%
+  open_source_value: 8%
+  distinctness: 18%
 
 formula:
   total = (
-    originality * 0.15 +
-    feasibility * 0.20 +
-    market_need * 0.15 +
-    monetization_potential * 0.10 +
-    tech_interest * 0.15 +
-    portfolio_value * 0.15 +
-    open_source_value * 0.10
+    originality * 0.12 +
+    feasibility * 0.18 +
+    market_need * 0.12 +
+    monetization_potential * 0.08 +
+    tech_interest * 0.12 +
+    learning_value * 0.12 +
+    open_source_value * 0.08 +
+    distinctness * 0.18
   )
 
 example:
-  scores: [8, 7, 6, 5, 9, 8, 7]
-  total: 7.25
+  scores: [8, 7, 6, 5, 9, 8, 7, 9]
+  total: 7.6
 ```
 
 #### `iterations`
@@ -534,12 +575,12 @@ options: pass | fail
 pass:
   - Meets quality criteria
   - See 3-evaluation-criteria.md for rules
-  - Will be saved to repository
+  - Will be saved to ideas/ directory
 
 fail:
   - Did not meet criteria after 3 iterations
   - Logged but not published
-  - Stored in archive/failed-attempts/
+  - Stored in archive/failed/
 ```
 
 ---
@@ -566,15 +607,16 @@ rules:
 ```yaml
 format: short string describing origin
 examples:
-  - "GitHub Trending - React"
+  - "Hacker News: WebGPU demo went viral"
   - "Personal pain point - monorepo management"
-  - "Baseball game + data viz mashup"
+  - "Cross-domain: cooking recipe graphs + data viz"
+  - "Weekly constraint: CLI only"
   - "Metroidvania mechanics → code exploration"
 
 use_when:
   - Clear inspiration source
   - Helps explain context
-  - Attribution needed
+  - Records diversity mechanism used
 
 rules:
   - One line max
@@ -598,7 +640,7 @@ must_have:
   - estimated_time
   - tech_stack (at least 2)
   - languages (at least 1)
-  - All 7 evaluation scores
+  - All 8 evaluation scores (including distinctness)
   - total
   - iterations
   - status
@@ -624,6 +666,7 @@ languages: 1-4 items
 evaluation_scores: must be 1-10 (integers)
 total: must be 1.0-10.0 (one decimal)
 iterations: must be 1-3
+distinctness: must be present — no idea saved without this score
 ```
 
 ---
@@ -633,7 +676,7 @@ iterations: must be 1-3
 ### Example 1: Frontend Tool
 ```yaml
 ---
-id: idea-2026-01-15-001
+id: idea-0001
 title: "Component Dependency Visualizer"
 generated: 2026-01-15T09:30:00+09:00
 
@@ -654,8 +697,9 @@ evaluation:
   tech_interest: 8
   learning_value: 7
   open_source_value: 8
-  
-  total: 7.0
+  distinctness: 9
+
+  total: 7.4
   iterations: 1
   status: pass
 
@@ -666,7 +710,7 @@ inspiration_source: "Personal pain point - component tracking"
 ### Example 2: Creative Experiment
 ```yaml
 ---
-id: idea-2026-01-15-002
+id: idea-0002
 title: "Metroidvania Code Explorer"
 generated: 2026-01-15T14:20:00+09:00
 
@@ -687,8 +731,9 @@ evaluation:
   tech_interest: 10
   learning_value: 9
   open_source_value: 7
-  
-  total: 7.4
+  distinctness: 10
+
+  total: 7.5
   iterations: 2
   status: pass
 
@@ -696,36 +741,37 @@ inspiration_source: "Metroidvania game mechanics → code exploration"
 ---
 ```
 
-### Example 3: Data Project
+### Example 3: Emerging Tech
 ```yaml
 ---
-id: idea-2026-01-15-003
-title: "Baseball Pitch Sequence Analyzer"
-generated: 2026-01-15T18:45:00+09:00
+id: idea-0003
+title: "WebGPU Particle Physics Playground"
+generated: 2026-02-10T11:00:00+09:00
 
-category: visualization
-subcategory: baseball-analytics
-difficulty: intermediate
-tags: [baseball, data-viz, d3, sports-analytics, react]
+category: experimental
+subcategory: webgpu
+difficulty: advanced
+tags: [webgpu, simulation, particle-system, physics, typescript]
 
-estimated_time: "2 weeks"
-tech_stack: [React, D3.js, TypeScript, Vite]
-languages: [TypeScript, Python]
+estimated_time: "2-3 weeks"
+tech_stack: [WebGPU, TypeScript, Vite]
+languages: [TypeScript, WGSL]
 
 evaluation:
-  originality: 6
-  feasibility: 9
-  market_need: 5
-  monetization_potential: 4
-  tech_interest: 7
-  learning_value: 6
-  open_source_value: 6
-  
-  total: 6.4
-  iterations: 3
+  originality: 9
+  feasibility: 6
+  market_need: 4
+  monetization_potential: 2
+  tech_interest: 10
+  learning_value: 10
+  open_source_value: 7
+  distinctness: 9
+
+  total: 7.3
+  iterations: 1
   status: pass
 
-inspiration_source: "Baseball fandom + data visualization expertise"
+inspiration_source: "Weekly constraint: must use unfamiliar tech (WebGPU)"
 ---
 ```
 
@@ -739,4 +785,4 @@ inspiration_source: "Baseball fandom + data visualization expertise"
 
 ---
 
-**Last Updated**: 2026-01-20
+**Last Updated**: 2026-03-23

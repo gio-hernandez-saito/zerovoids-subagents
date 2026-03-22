@@ -9,6 +9,7 @@
 Not every idea passes on the first try. This document defines:
 
 - When to attempt refinement vs. abandon
+- When to restart with a completely new concept
 - How to identify weaknesses
 - Strategies for improving each dimension
 - When to stop trying
@@ -31,33 +32,42 @@ Not every idea passes on the first try. This document defines:
     └────┬────┘
     YES  │  NO
     ▼    ▼
-┌──────┐ ┌──────────────┐
-│ Done │ │ Analyze Weak │
-└──────┘ └──────┬───────┘
+┌──────┐ ┌──────────────────┐
+│ Done │ │ Check Distinctness│
+└──────┘ └──────┬───────────┘
                 ▼
          ┌──────────────┐
-         │   Refine     │
+         │ distinct <= 4?│
          └──────┬───────┘
-                ▼
-         ┌──────────────┐
-         │ Re-evaluate  │
-         └──────┬───────┘
-                ▼
-           ┌────┴────┐
-           │ Pass?   │
-           └────┬────┘
-           YES  │  NO
-           ▼    ▼
-       ┌──────┐ ┌────────────┐
-       │ Done │ │ Iteration  │
-       └──────┘ │ < 3?       │
-                └─────┬──────┘
-                 YES  │  NO
-                 ▼    ▼
-         ┌─────────┐ ┌─────────┐
-         │ Refine  │ │ Archive │
-         │ Again   │ │ (Fail)  │
-         └─────────┘ └─────────┘
+          YES   │  NO
+          ▼     ▼
+    ┌─────────┐ ┌──────────────┐
+    │ RESTART │ │ Analyze Weak │
+    │ (new    │ └──────┬───────┘
+    │ concept)│        ▼
+    └─────────┘ ┌──────────────┐
+                │   Refine     │
+                └──────┬───────┘
+                       ▼
+                ┌──────────────┐
+                │ Re-evaluate  │
+                └──────┬───────┘
+                       ▼
+                  ┌────┴────┐
+                  │ Pass?   │
+                  └────┬────┘
+                  YES  │  NO
+                  ▼    ▼
+              ┌──────┐ ┌────────────┐
+              │ Done │ │ Iteration  │
+              └──────┘ │ < 3?       │
+                       └─────┬──────┘
+                        YES  │  NO
+                        ▼    ▼
+              ┌─────────┐ ┌─────────┐
+              │ Refine  │ │ Archive │
+              │ Again   │ │ (Fail)  │
+              └─────────┘ └─────────┘
 ```
 
 ---
@@ -69,6 +79,7 @@ Not every idea passes on the first try. This document defines:
 | max_iterations    | 3     | Diminishing returns after 3 attempts              |
 | min_improvement   | 0.5   | Must improve by at least 0.5 points per iteration |
 | abandon_threshold | 4.0   | Don't bother refining if total < 4.0              |
+| restart_threshold | distinctness <= 4 | Cannot refine similarity away      |
 
 ---
 
@@ -81,9 +92,33 @@ Immediately archive (skip refinement) if:
 | `total_score < 4.0`      | Fundamentally flawed, not worth saving |
 | `originality <= 2`       | Too generic, needs complete rethink    |
 | `feasibility <= 2`       | Unrealistic, scope too ambitious       |
+| `distinctness <= 3`      | Too similar to existing — needs completely new idea, not polish |
 | Multiple dimensions <= 3 | Too many problems to fix               |
 
 **Philosophy**: Some ideas should die. Don't waste effort polishing garbage.
+
+---
+
+## 🔁 When to RESTART Instead of Refine
+
+If the idea fails because of `distinctness <= 4`:
+
+**DO NOT refine the same idea.** Refinement cannot fix fundamental similarity. Tweaking a near-duplicate produces a slightly-different near-duplicate. Instead: generate a COMPLETELY DIFFERENT concept.
+
+| Situation | Action |
+|-----------|--------|
+| distinctness <= 3 | ABANDON immediately, generate new concept |
+| distinctness 4-5 | ONE attempt to pivot dramatically (change domain entirely), otherwise abandon |
+| distinctness 6+ | Normal refinement applies |
+
+### Restart Strategy
+
+When restarting due to similarity:
+1. Identify which existing idea it overlaps with
+2. Explicitly block that entire domain for this generation
+3. Pick a category with ZERO existing ideas in the bank
+4. Use the weekly constraint as the primary driver
+5. Incorporate at least one cross-domain inspiration from Step 2
 
 ---
 
@@ -104,18 +139,20 @@ After evaluation, categorize each score:
 
 Fix in this order (highest impact first):
 
-1. **feasibility** - Can't build = everything else meaningless
-2. **originality** - Generic ideas aren't worth building
-3. **tech_interest** - Boring to build = won't finish
-4. **learning_value** - No growth = why bother
-5. **market_need** - Nice to have
-6. **open_source_value** - Bonus
-7. **monetization_potential** - Optional
+1. **distinctness** - If <= 4, restart rather than refine
+2. **feasibility** - Can't build = everything else meaningless
+3. **originality** - Generic ideas aren't worth building
+4. **tech_interest** - Boring to build = won't finish
+5. **learning_value** - No growth = why bother
+6. **market_need** - Nice to have
+7. **open_source_value** - Bonus
+8. **monetization_potential** - Optional
 
 ### Step 3: Check Constraints
 
 Before refining, verify:
 
+- Is distinctness >= 5? If not, restart
 - Can this dimension realistically improve?
 - Will improving it break other strong dimensions?
 - Is the core idea salvageable?
@@ -237,13 +274,13 @@ Before refining, verify:
 
 **Strategies**:
 
-| Strategy              | Description                       | Example                                            |
-|-----------------------|-----------------------------------|----------------------------------------------------|
-| Tech Stretch          | Use unfamiliar technology         | jQuery → Svelte or solid.js                        |
-| Depth Addition        | Add conceptual complexity         | Simple CRUD → CRUD with optimistic updates        |
-| New Domain            | Enter unfamiliar territory        | Web app → CLI tool or browser extension            |
-| Architecture Challenge | Apply patterns you haven't used   | Spaghetti → Clean architecture with clear layers  |
-| Performance Focus     | Add optimization requirements     | Just works → Works with 10k items smoothly        |
+| Strategy               | Description                       | Example                                            |
+|------------------------|-----------------------------------|----------------------------------------------------|
+| Tech Stretch           | Use unfamiliar technology         | jQuery → Svelte or solid.js                        |
+| Depth Addition         | Add conceptual complexity         | Simple CRUD → CRUD with optimistic updates         |
+| New Domain             | Enter unfamiliar territory        | Web app → CLI tool or browser extension            |
+| Architecture Challenge | Apply patterns you haven't used   | Spaghetti → Clean architecture with clear layers   |
+| Performance Focus      | Add optimization requirements     | Just works → Works with 10k items smoothly         |
 
 **Questions to ask**:
 - What will I understand better after this?
@@ -273,6 +310,30 @@ Before refining, verify:
 
 ---
 
+### 8. Low Distinctness (4-5 only — <= 3 triggers restart)
+
+**Diagnosis**: Idea overlaps with existing bank entries
+
+**Note**: If distinctness <= 3, do NOT apply any strategy below — restart with a new concept.
+
+**Strategies** (for distinctness 4-5 only):
+
+| Strategy         | Description                           | Example                                           |
+|------------------|---------------------------------------|---------------------------------------------------|
+| Domain Pivot     | Shift to completely different domain  | Another dev tool → Biology simulation             |
+| User Flip        | Radically different target user       | Developer tool → Designer tool                    |
+| Format Change    | Same data, wildly different form      | Dashboard → CLI tool or physical world data input |
+| Tech Constraint  | Apply weekly constraint as pivot      | Use constraint to force unfamiliar territory      |
+| Crossover Mashup | Apply domain crossover from Step 2    | Use the random domain to reframe entirely         |
+
+**Questions to ask**:
+- What's the exact existing idea it overlaps with?
+- What category has ZERO existing ideas?
+- Can I flip the entire domain (not just the approach)?
+- Does applying the weekly constraint push me somewhere new?
+
+---
+
 ## 📝 Refinement Template
 
 When refining, document the changes:
@@ -283,6 +344,11 @@ When refining, document the changes:
 ### Iteration: [1/2/3]
 
 ### Previous Score: [X.X]
+
+### Distinctness Check
+- Distinctness score: [N]
+- Action: [refine | restart | abandon]
+- If restart: new concept domain: [domain]
 
 ### Identified Weaknesses
 | Dimension | Score | Issue |
@@ -304,7 +370,7 @@ When refining, document the changes:
 
 ### New Score: [X.X]
 
-### Result: [PASS/FAIL/CONTINUE]
+### Result: [PASS/FAIL/CONTINUE/RESTART]
 ```
 
 ---
@@ -324,16 +390,17 @@ When refining, document the changes:
 | market_need            | 5       |
 | monetization_potential | 3       |
 | tech_interest          | 4       |
-| portfolio_value        | 4       |
+| learning_value         | 4       |
 | open_source_value      | 5       |
-| **Total**              | **5.0** |
+| distinctness           | 7       |
+| **Total**              | **5.4** |
 
-**Analysis**: Feasibility is great, but boring and generic.
+**Analysis**: Feasibility and distinctness are good, but boring and generic otherwise.
 
 **Refinement Strategy**:
 - originality: Add 3D visualization of file system
 - tech_interest: Use Three.js for spatial navigation
-- portfolio_value: Make it visually impressive
+- learning_value: Force learning of 3D scene management
 
 **Refined Idea**: 3D File System Explorer - Navigate your files in a Metroidvania-style 3D space
 
@@ -345,13 +412,44 @@ When refining, document the changes:
 | feasibility     | 9       | 7       |
 | tech_interest   | 4       | 9       |
 | learning_value  | 4       | 9       |
-| **Total**       | **5.0** | **7.6** |
+| distinctness    | 7       | 9       |
+| **Total**       | **5.4** | **7.8** |
 
 **Result**: PASS
 
 ---
 
-### Example 2: Failed Refinement (Abandoned)
+### Example 2: Restart Due to Similarity
+
+**Original Idea**: Color Space Converter Library
+
+**Initial Scores**:
+
+| Dimension              | Score   |
+|------------------------|---------|
+| originality            | 5       |
+| feasibility            | 9       |
+| market_need            | 6       |
+| monetization_potential | 3       |
+| tech_interest          | 5       |
+| learning_value         | 4       |
+| open_source_value      | 7       |
+| distinctness           | 2       |
+| **Total**              | **5.2** |
+
+**Analysis**: Bank already has 3 color-related ideas. distinctness = 2 → immediate restart.
+
+**Restart Action**:
+1. Block: color tools, design systems, frontend styling
+2. Target: zero-idea categories — found "biology" and "CLI tools"
+3. Weekly constraint: "must use unfamiliar tech"
+4. New concept: WASM-powered DNA sequence visualizer
+
+**New concept scores entirely differently. Restart complete.**
+
+---
+
+### Example 3: Failed Refinement (Abandoned)
 
 **Original Idea**: Real-time multiplayer VR code review
 
@@ -364,11 +462,12 @@ When refining, document the changes:
 | market_need            | 4       |
 | monetization_potential | 3       |
 | tech_interest          | 8       |
-| portfolio_value        | 7       |
+| learning_value         | 7       |
 | open_source_value      | 4       |
-| **Total**              | **5.1** |
+| distinctness           | 9       |
+| **Total**              | **5.5** |
 
-**Analysis**: Creative but completely unrealistic to build in 2-4 weeks.
+**Analysis**: Creative and distinct, but completely unrealistic to build in 2-4 weeks.
 
 **Iteration 1**: Reduce to single-player VR → feasibility: 4 (still too hard)
 
@@ -376,13 +475,13 @@ When refining, document the changes:
 
 **Iteration 3**: Add back some VR elements → feasibility drops again: 3
 
-**Result**: ABANDONED - Core concept requires VR which kills feasibility. The interesting part IS the VR, removing it makes it boring.
+**Result**: ABANDONED — Core concept requires VR which kills feasibility. The interesting part IS the VR, removing it makes it boring.
 
 **Learning**: Some ideas are inherently all-or-nothing. Can't half-ass VR.
 
 ---
 
-### Example 3: Refinement with Trade-offs
+### Example 4: Refinement with Trade-offs
 
 **Original Idea**: AI-powered code generator
 
@@ -395,11 +494,12 @@ When refining, document the changes:
 | market_need            | 8       |
 | monetization_potential | 7       |
 | tech_interest          | 6       |
-| portfolio_value        | 5       |
+| learning_value         | 5       |
 | open_source_value      | 4       |
-| **Total**              | **5.7** |
+| distinctness           | 5       |
+| **Total**              | **5.6** |
 
-**Analysis**: Market exists, buildable, but too generic (Copilot, etc. exist)
+**Analysis**: Market exists, buildable, but too generic (Copilot, etc. exist). Distinctness marginal.
 
 **Refinement Strategy**: Niche down dramatically
 
@@ -409,10 +509,11 @@ When refining, document the changes:
 - market_need: 8 → 6 (smaller audience)
 - originality: 3 → 8 (nothing like this exists)
 - learning_value: 5 → 8 (deep dive into animation internals)
+- distinctness: 5 → 8 (genuinely specific niche)
 
-**New Total**: 7.2
+**New Total**: 7.3
 
-**Result**: PASS - Accepted trade-off of smaller market for higher originality
+**Result**: PASS — Accepted trade-off of smaller market for higher originality and distinctness
 
 ---
 
@@ -448,6 +549,12 @@ When refining, document the changes:
 
 **Solution**: Refinement should simplify, not complicate
 
+### 6. Polishing Near-Duplicates
+
+**Symptom**: Refining an idea with distinctness <= 4, hoping small changes will fix similarity
+
+**Solution**: Similarity is structural, not cosmetic. Restart with a new concept.
+
 ---
 
 ## 🔗 Related Documents
@@ -458,4 +565,4 @@ When refining, document the changes:
 
 ---
 
-**Last Updated**: 2026-01-17
+**Last Updated**: 2026-03-23

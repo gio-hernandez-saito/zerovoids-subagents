@@ -1,6 +1,6 @@
 # Deployment
 
-> Defines how to run the agent and automate idea generation
+> Defines how to run the probe and automate idea generation
 
 ---
 
@@ -20,18 +20,17 @@ This document covers:
 ### Idea Bank Repository
 
 ```
-zerovoids-idea-bank/
+zerovoids-cosmos/
 ├── .github/
 │   └── workflows/
-│       └── daily-idea.yml
+│       └── weekly-idea.yml
 ├── ideas/
-│   └── 2026/
-│       └── 01/
-│           ├── 2026-01-15-metroidvania-code-explorer.md
-│           └── 2026-01-16-baseball-pitch-analyzer.md
+│   ├── 0001-metroidvania-code-explorer.md
+│   ├── 0002-baseball-pitch-analyzer.md
+│   └── 0003-webgpu-particle-simulator.md
 ├── archive/
 │   └── failed/
-│       └── 2026-01-14-generic-todo-app.md
+│       └── 0004-generic-todo-app.md
 ├── stats/
 │   ├── monthly-2026-01.json
 │   └── all-time.json
@@ -42,20 +41,27 @@ zerovoids-idea-bank/
 
 | Directory         | Purpose      | Contents                                  |
 |-------------------|--------------|-------------------------------------------|
-| `ideas/YYYY/MM/`  | Passed ideas | Ideas that met criteria                   |
+| `ideas/`          | Passed ideas | Ideas that met criteria, index-named      |
 | `archive/failed/` | Failed ideas | Ideas that couldn't pass after refinement |
 | `stats/`          | Analytics    | Monthly and cumulative statistics         |
 
 ### File Naming Convention
 
 ```
-YYYY-MM-DD-slug-title.md
+{NNNN}-{slug}.md
 ```
 
+Where NNNN is the global sequential index across all ideas, zero-padded to 4 digits.
+
 Examples:
-- `2026-01-15-metroidvania-code-explorer.md`
-- `2026-01-16-baseball-pitch-analyzer.md`
-- `2026-01-17-3d-file-navigator.md`
+- `0001-metroidvania-code-explorer.md`
+- `0002-baseball-pitch-analyzer.md`
+- `0003-webgpu-particle-simulator.md`
+- `0042-urban-traffic-flow-visualizer.md`
+
+### Index Management
+
+The probe tracks the current highest index in `stats/all-time.json` under the `last_index` field. Each new idea (pass or fail) increments this counter, so indices are never reused.
 
 ---
 
@@ -70,9 +76,9 @@ Examples:
 ### Setup
 
 ```bash
-# Clone subagents repo
-git clone https://github.com/zerovoids/zerovoids-subagents.git
-cd zerovoids-subagents
+# Clone cosmos repo
+git clone https://github.com/zerovoids/zerovoids-cosmos.git
+cd zerovoids-cosmos
 
 # Install dependencies
 pnpm install
@@ -85,23 +91,44 @@ cp .env.example .env
 ### Manual Execution
 
 ```bash
-# Run idea generator
-pnpm run agent:idea-generator-critic
+# Run idea generator probe
+pnpm run probe:idea-generator-critic
 
 # With options
-pnpm run agent:idea-generator-critic --output ./output/
-pnpm run agent:idea-generator-critic --dry-run
-pnpm run agent:idea-generator-critic --verbose
+pnpm run probe:idea-generator-critic --output ./output/
+pnpm run probe:idea-generator-critic --dry-run
+pnpm run probe:idea-generator-critic --verbose
+pnpm run probe:idea-generator-critic --ideas-dir ./ideas/
+```
+
+### `--ideas-dir` Option
+
+The `--ideas-dir` flag points the probe to the directory containing existing ideas. The probe scans this directory to:
+
+- Build the bank state (titles, tags, categories)
+- Detect overused concepts
+- Calculate category distribution
+- Score distinctness accurately
+
+```bash
+# Default: scans ./ideas/ relative to CWD
+pnpm run probe:idea-generator-critic
+
+# Custom ideas directory
+pnpm run probe:idea-generator-critic --ideas-dir /path/to/idea-bank/ideas/
+
+# When running from cosmos repo pointing to separate idea-bank
+pnpm run probe:idea-generator-critic --ideas-dir ../zerovoids-cosmos/ideas/
 ```
 
 ### Testing
 
 ```bash
 # Test evaluation logic
-pnpm test agents/idea-generator-critic
+pnpm test probes/idea-generator-critic
 
 # Test with mock data
-pnpm test:mock agents/idea-generator-critic
+pnpm test:mock probes/idea-generator-critic
 ```
 
 ---
@@ -111,14 +138,14 @@ pnpm test:mock agents/idea-generator-critic
 ### Workflow File
 
 ```yaml
-# .github/workflows/daily-idea.yml
+# .github/workflows/weekly-idea.yml
 
-name: Daily Idea Generation
+name: Weekly Idea Generation
 
 on:
   schedule:
-    # Run at 9 AM KST (0 AM UTC) every day
-    - cron: '0 0 * * *'
+    # Run at 9 AM KST (0 AM UTC) every Monday
+    - cron: '0 0 * * 1'
   workflow_dispatch:
     # Allow manual trigger
     inputs:
@@ -134,19 +161,13 @@ env:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout subagents
-        uses: actions/checkout@v4
-        with:
-          repository: zerovoids/zerovoids-subagents
-          path: subagents
 
-      - name: Checkout idea-bank
+    steps:
+      - name: Checkout cosmos repo (idea bank + probe)
         uses: actions/checkout@v4
         with:
-          repository: zerovoids/zerovoids-idea-bank
-          path: idea-bank
+          repository: zerovoids/zerovoids-cosmos
+          path: cosmos
           token: ${{ secrets.IDEA_BANK_TOKEN }}
 
       - name: Setup Node.js
@@ -161,52 +182,49 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd subagents
+          cd cosmos
           pnpm install
 
       - name: Generate idea
         id: generate
         run: |
-          cd subagents
-          RESULT=$(pnpm run agent:idea-generator-critic --json)
+          cd cosmos
+          RESULT=$(pnpm run probe:idea-generator-critic --json --ideas-dir ./ideas/)
           echo "result=$RESULT" >> $GITHUB_OUTPUT
 
       - name: Process result
         run: |
-          cd idea-bank
-          
-          DATE=$(date +%Y-%m-%d)
-          YEAR=$(date +%Y)
-          MONTH=$(date +%m)
-          
+          cd cosmos
+
           # Parse result
           STATUS=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.status')
           SCORE=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.score')
           FILENAME=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.filename')
-          
+          INDEX=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.index')
+
           # Route based on status
           if [ "$STATUS" = "pass" ]; then
-            mkdir -p "ideas/$YEAR/$MONTH"
-            cp "../subagents/output/$FILENAME" "ideas/$YEAR/$MONTH/"
-            echo "✅ Idea passed with score $SCORE"
+            mkdir -p "ideas"
+            cp "output/$FILENAME" "ideas/"
+            echo "Idea passed with score $SCORE (index $INDEX)"
           else
             mkdir -p "archive/failed"
-            cp "../subagents/output/$FILENAME" "archive/failed/"
-            echo "❌ Idea failed with score $SCORE"
+            cp "output/$FILENAME" "archive/failed/"
+            echo "Idea failed with score $SCORE (index $INDEX)"
           fi
 
       - name: Update stats
         run: |
-          cd idea-bank
+          cd cosmos
           node scripts/update-stats.js
 
       - name: Commit and push
         run: |
-          cd idea-bank
+          cd cosmos
           git config user.name "Idea Generator Bot"
           git config user.email "bot@zerovoids.dev"
           git add .
-          git diff --staged --quiet || git commit -m "feat: daily idea $(date +%Y-%m-%d)"
+          git diff --staged --quiet || git commit -m "feat: weekly idea $(date +%Y-%m-%d)"
           git push
 ```
 
@@ -215,7 +233,7 @@ jobs:
 | Secret              | Purpose                       |
 |---------------------|-------------------------------|
 | `ANTHROPIC_API_KEY` | API access for Claude         |
-| `IDEA_BANK_TOKEN`   | Push access to idea-bank repo |
+| `IDEA_BANK_TOKEN`   | Push access to cosmos repo    |
 
 ### Setting Up Secrets
 
@@ -233,21 +251,22 @@ jobs:
 ```json
 {
   "month": "2026-01",
-  "generated": 31,
-  "passed": 22,
-  "failed": 9,
-  "pass_rate": 0.71,
-  "avg_score": 7.2,
-  "avg_iterations": 1.8,
+  "generated": 4,
+  "passed": 3,
+  "failed": 1,
+  "pass_rate": 0.75,
+  "avg_score": 7.4,
+  "avg_iterations": 1.3,
+  "avg_distinctness": 8.2,
   "by_category": {
-    "frontend": 8,
-    "automation": 6,
-    "visualization": 5,
-    "tool": 3
+    "experimental": 1,
+    "developer-tool": 1,
+    "visualization": 1,
+    "automation": 1
   },
   "top_scores": [
-    { "title": "Metroidvania Code Explorer", "score": 8.9 },
-    { "title": "Baseball Analytics Dashboard", "score": 8.2 }
+    { "title": "Metroidvania Code Explorer", "score": 8.9, "index": "0001" },
+    { "title": "Baseball Analytics Dashboard", "score": 8.2, "index": "0002" }
   ]
 }
 ```
@@ -256,17 +275,27 @@ jobs:
 
 ```json
 {
-  "total_generated": 156,
-  "total_passed": 112,
-  "total_failed": 44,
-  "overall_pass_rate": 0.72,
-  "overall_avg_score": 7.3,
+  "last_index": 42,
+  "total_generated": 42,
+  "total_passed": 31,
+  "total_failed": 11,
+  "overall_pass_rate": 0.74,
+  "overall_avg_score": 7.5,
+  "overall_avg_distinctness": 8.0,
+  "category_distribution": {
+    "experimental": 8,
+    "developer-tool": 7,
+    "visualization": 6,
+    "automation": 5,
+    "utility": 3,
+    "gaming": 2
+  },
   "monthly_trend": [
-    { "month": "2026-01", "passed": 22, "avg_score": 7.2 },
-    { "month": "2026-02", "passed": 25, "avg_score": 7.4 }
+    { "month": "2026-01", "passed": 3, "avg_score": 7.2 },
+    { "month": "2026-02", "passed": 4, "avg_score": 7.6 }
   ],
   "best_ideas": [
-    { "title": "...", "score": 9.2, "date": "2026-01-15" }
+    { "title": "...", "score": 9.2, "index": "0007" }
   ]
 }
 ```
@@ -282,16 +311,19 @@ const path = require('path');
 function updateStats() {
   const ideasDir = path.join(__dirname, '../ideas');
   const statsDir = path.join(__dirname, '../stats');
-  
+
   // Gather all ideas
   const ideas = gatherIdeas(ideasDir);
-  
+
   // Calculate monthly stats
   const monthlyStats = calculateMonthlyStats(ideas);
-  
+
   // Calculate all-time stats
   const allTimeStats = calculateAllTimeStats(ideas);
-  
+
+  // Track last index for ID assignment
+  allTimeStats.last_index = Math.max(...ideas.map(i => parseInt(i.id.replace('idea-', ''))));
+
   // Write stats files
   for (const [month, stats] of Object.entries(monthlyStats)) {
     fs.writeFileSync(
@@ -299,7 +331,7 @@ function updateStats() {
       JSON.stringify(stats, null, 2)
     );
   }
-  
+
   fs.writeFileSync(
     path.join(statsDir, 'all-time.json'),
     JSON.stringify(allTimeStats, null, 2)
@@ -324,7 +356,8 @@ updateStats();
     STATUS=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.status')
     TITLE=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.title')
     SCORE=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.score')
-    
+    INDEX=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.index')
+
     if [ "$STATUS" = "pass" ]; then
       EMOJI="✅"
       COLOR="3066993"
@@ -332,9 +365,9 @@ updateStats();
       EMOJI="❌"
       COLOR="15158332"
     fi
-    
+
     curl -H "Content-Type: application/json" \
-      -d "{\"embeds\": [{\"title\": \"$EMOJI Daily Idea: $TITLE\", \"description\": \"Score: $SCORE\", \"color\": $COLOR}]}" \
+      -d "{\"embeds\": [{\"title\": \"$EMOJI Weekly Idea #$INDEX: $TITLE\", \"description\": \"Score: $SCORE\", \"color\": $COLOR}]}" \
       ${{ secrets.DISCORD_WEBHOOK }}
 ```
 
@@ -347,7 +380,7 @@ updateStats();
   with:
     payload: |
       {
-        "text": "Daily idea generated: ${{ steps.generate.outputs.result }}"
+        "text": "Weekly idea generated: ${{ steps.generate.outputs.result }}"
       }
   env:
     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
@@ -368,23 +401,29 @@ pnpm run validate:ideas
 
 # Clean up malformed files
 pnpm run cleanup
+
+# Check category distribution
+pnpm run stats:categories
 ```
 
 ### Troubleshooting
 
-| Issue                   | Cause             | Solution                     |
-|-------------------------|-------------------|------------------------------|
-| Workflow not triggering | Cron syntax       | Check timezone (UTC)         |
-| API rate limit          | Too many requests | Add delay between calls      |
-| Push failed             | Token expired     | Regenerate PAT               |
-| Low quality output      | Context missing   | Check 0-context.md is loaded |
+| Issue                      | Cause               | Solution                          |
+|----------------------------|---------------------|-----------------------------------|
+| Workflow not triggering    | Cron syntax         | Check timezone (UTC)              |
+| API rate limit             | Too many requests   | Add delay between calls           |
+| Push failed                | Token expired       | Regenerate PAT                    |
+| Low quality output         | Context missing     | Check 0-context.md is loaded      |
+| Duplicate ideas generated  | ideas-dir not set   | Pass --ideas-dir to probe         |
+| Index collision            | Stats out of sync   | Run pnpm run stats:rebuild        |
 
 ### Monitoring
 
-- Check Actions tab for workflow runs
-- Review failed runs for errors
+- Check Actions tab for workflow runs (weekly)
+- Review generated ideas after each run
 - Monitor API usage in Anthropic console
 - Track pass rate trends in stats
+- Review category distribution monthly to ensure diversity
 
 ---
 
@@ -392,29 +431,31 @@ pnpm run cleanup
 
 ### Initial Setup
 
-- [ ] Create `zerovoids-idea-bank` repository
-- [ ] Set up directory structure
-- [ ] Add workflow file
-- [ ] Configure secrets
-- [ ] Test manual trigger
-- [ ] Verify cron schedule
+- [ ] Create `zerovoids-cosmos` repository
+- [ ] Set up directory structure (`ideas/`, `archive/failed/`, `stats/`)
+- [ ] Add workflow file at `.github/workflows/weekly-idea.yml`
+- [ ] Configure secrets (`ANTHROPIC_API_KEY`, `IDEA_BANK_TOKEN`)
+- [ ] Initialize `stats/all-time.json` with `last_index: 0`
+- [ ] Test manual trigger with `--dry-run`
+- [ ] Verify cron schedule (Monday 9 AM KST)
 
 ### Ongoing
 
-- [ ] Monitor daily runs
+- [ ] Monitor weekly runs
 - [ ] Review generated ideas weekly
 - [ ] Adjust thresholds if needed
 - [ ] Update context as interests change
+- [ ] Check category balance monthly (no category > 25%)
 
 ---
 
 ## 🔗 Related Documents
 
-- `agent.md`: The actual agent implementation
-- `0-context.md`: Context loaded during generation
+- `agent.md`: The actual probe implementation
+- `0-context.md`: Context loaded during generation (includes diversity rules)
 - `3-evaluation-criteria.md`: Scoring that determines pass/fail
 - `4-refinement-protocol.md`: How failed ideas are refined
 
 ---
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-03-23

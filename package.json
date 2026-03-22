@@ -1,12 +1,14 @@
 {
   "name": "zerovoids-subagents",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "Transforming shattered fragments into a cosmos",
+  "description": "Claude Code를 위한 통합 에이전트 시스템. Skills, Commands, Agents, Workflows를 단방향 레이어 구조로 관리합니다.",
   "scripts": {
     "prepare": "husky",
-    "agent:idea-generator-critic": "tsx agents/idea-generator-critic/run.ts"
+    "validate": "node scripts/validate.cjs",
+    "build": "node scripts/build.cjs",
+    "probe:idea-generator-critic": "tsx probes/idea-generator-critic/run.ts"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
@@ -17,5 +19,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "dotenv": "^16.4.0"
-  }
+  },
+  "license": "MIT"
 }
