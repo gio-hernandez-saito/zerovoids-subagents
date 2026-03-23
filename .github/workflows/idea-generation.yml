@@ -45,22 +45,53 @@ jobs:
         id: generate
         run: |
           cd cosmos
-          RESULT=$(pnpm run probe:idea-generator-critic --json --ideas-dir ../idea-bank/ideas 2>/dev/null | tail -1)
-          echo "result=$RESULT" >> $GITHUB_OUTPUT
+          # Capture stdout and stderr separately; probe prints JSON as the last stdout line
+          set +e
+          RESULT=$(pnpm run probe:idea-generator-critic --json --ideas-dir ../idea-bank/ideas 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::Probe failed with exit code $EXIT_CODE"
+            echo "$RESULT" | tail -30
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Extract the last line (JSON output) from stdout
+          JSON_LINE=$(echo "$RESULT" | grep '^\s*{' | tail -1)
+
+          if [ -z "$JSON_LINE" ] || ! echo "$JSON_LINE" | jq empty 2>/dev/null; then
+            echo "::error::Probe did not return valid JSON"
+            echo "$RESULT" | tail -15
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "success=true" >> $GITHUB_OUTPUT
+
+          # Use a delimiter to safely pass multiline JSON
+          EOF_MARKER=$(dd if=/dev/urandom bs=15 count=1 2>/dev/null | base64)
+          {
+            echo "result<<${EOF_MARKER}"
+            echo "$JSON_LINE"
+            echo "${EOF_MARKER}"
+          } >> $GITHUB_OUTPUT
 
       - name: Process result
+        if: steps.generate.outputs.success == 'true'
         run: |
           cd idea-bank
 
-          STATUS=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.status')
-          FILENAME=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.filename')
-          CONTENT=$(echo '${{ steps.generate.outputs.result }}' | jq -r '.content')
+          RESULT='${{ steps.generate.outputs.result }}'
+          STATUS=$(echo "$RESULT" | jq -r '.status')
+          FILENAME=$(echo "$RESULT" | jq -r '.filename')
 
           if [ "$STATUS" = "pass" ]; then
-            echo "$CONTENT" > "ideas/$FILENAME"
+            echo "$RESULT" | jq -r '.content' > "ideas/$FILENAME"
             echo "Idea passed: $FILENAME"
           else
-            echo "Idea failed — not saved"
+            echo "Idea failed evaluation — not saved"
           fi
 
       - name: Commit and push

@@ -602,6 +602,29 @@ IMPORTANT:
 }
 
 // ============================================
+// JSON Extraction
+// ============================================
+
+function extractJson(text: string): string {
+  // Strategy 1: ```json ... ``` code fence
+  const fenceStart = text.indexOf("```json");
+  const fenceEnd = text.lastIndexOf("```");
+  if (fenceStart !== -1 && fenceEnd > fenceStart) {
+    return text.slice(fenceStart + 7, fenceEnd).trim();
+  }
+
+  // Strategy 2: first { ... last } (greedy outermost braces)
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    return text.slice(firstBrace, lastBrace + 1).trim();
+  }
+
+  // Fallback: return as-is, let caller handle parse error
+  return text.trim();
+}
+
+// ============================================
 // Post-processing
 // ============================================
 
@@ -665,15 +688,8 @@ async function generateIdea(
     throw new Error("No text content in response");
   }
 
-  // Parse JSON from response
-  let jsonStr = textContent.text;
-
-  const jsonStart = textContent.text.indexOf("```json");
-  const jsonEnd = textContent.text.lastIndexOf("```");
-
-  if (jsonStart !== -1 && jsonEnd > jsonStart) {
-    jsonStr = textContent.text.slice(jsonStart + 7, jsonEnd).trim();
-  }
+  // Parse JSON from response — try multiple extraction strategies
+  const jsonStr = extractJson(textContent.text);
 
   try {
     const result = JSON.parse(jsonStr);
@@ -693,7 +709,9 @@ async function generateIdea(
       title: result.title,
     };
   } catch {
-    throw new Error(`Failed to parse response as JSON: ${textContent.text}`);
+    // Log a truncated preview so CI can diagnose without flooding logs
+    const preview = textContent.text.slice(0, 500);
+    throw new Error(`Failed to parse response as JSON.\nExtracted fragment:\n${jsonStr.slice(0, 300)}\n\nRaw response preview:\n${preview}`);
   }
 }
 
