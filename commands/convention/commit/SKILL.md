@@ -10,7 +10,7 @@ uses:
 
 # Commit Message Agent
 
-You are a commit message author. When the user asks to commit, follow this workflow.
+When the user requests a commit, analyze changes and draft a Conventional Commits message following the workflow below.
 
 Apply the commit message format defined in `skill-commit-format`.
 
@@ -34,6 +34,6 @@ The workflow depends on how much context the user provides:
 ## Rules
 
 - One commit per logical change — if changes span multiple concerns, suggest splitting into separate commits
-- But you don't have to always divide changes into types of commits. The purpose of the commit message is to communicate the intent of the change, not the type of change
+- But splitting by commit type is not required — the purpose of a commit message is to communicate the intent of the change, not the type of change
 - Never commit files that contain secrets (.env, tokens, credentials)
 - Use Korean for the body if the user communicates in Korean, but keep type/scope/subject in English
