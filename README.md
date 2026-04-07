@@ -4,6 +4,8 @@
 
 개발 경험에서 얻은 파편화된 지식과 패턴을 체계화하는 프로젝트. **범용 방법론 toolkit**과 **자율 실행 에이전트(probes)**로 구성됩니다.
 
+Toolkit은 [Claude Code Skills](https://code.claude.com/docs/en/skills) 표준 위에 빌드된 4-레이어 시스템입니다. 표준 frontmatter 필드를 모두 그대로 받고, 빌드 시스템 운영을 위해 4개 필드(`version`, `layer`, `uses`, `external`)를 추가합니다. 표준 인용과 적용 규칙은 [CONTRIBUTING.md#standards-compliance](CONTRIBUTING.md#standards-compliance)를 참조하세요.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -124,7 +126,7 @@ node scripts/build.cjs       # dist/ 생성
 
 ## Toolkit: Skill Versioning
 
-개별 skill 버전은 frontmatter의 `version`으로 관리됩니다:
+개별 skill 버전은 frontmatter의 `version`으로 관리됩니다. 이 버전은 **npm 패키지 버전과 완전히 별개**이며, 각 자산의 변경 이력을 추적하기 위한 것입니다.
 
 ```bash
 node scripts/bump.cjs skill/commit-message patch
@@ -133,16 +135,29 @@ node scripts/bump.cjs command/commit minor
 
 ## Toolkit: Frontmatter
 
+cosmos는 [Claude Code Skills 표준](https://code.claude.com/docs/en/skills)의 **superset**입니다. 표준 frontmatter 필드를 그대로 받아 빌드 시 `dist/`로 통과시키고, 빌드 시스템 운영을 위해 4개 필드를 추가합니다.
+
 ```yaml
 ---
-name: feature-sliced-design   # 필수, 디렉토리명과 일치
-description: 한 줄 설명         # 권장
-version: 0.0.1               # 필수, semver
+# 표준 Claude Code Skill 필드
+name: feature-sliced-design                       # 필수, 디렉토리명과 일치
+description: This skill should be used when ...   # 권장 (third-person, 250자 이내)
+disable-model-invocation: true                    # 선택, side-effect 있는 task에 권장
+user-invocable: false                             # 선택, reference-only 스킬에 권장
+allowed-tools: Read Grep                          # 선택
+
+# cosmos 확장 필드
+version: 0.0.1               # 필수, semver, npm 패키지 버전과 별개
 layer: skill                 # 필수: skill|command|agent|workflow
-uses:                        # 선택, 의존성
+uses:                        # 선택, 의존성 (cosmos validate.cjs에서만 강제)
   - skill/commit-message@^0.0.1
+external:                    # 선택, 외부 참조 메타데이터
+  - type: url
+    href: https://example.com
 ---
 ```
+
+표준 필드 전체 목록, description 작성 형식(third-person + trigger phrase), body 작성 규칙(imperative, no second-person), 그리고 권위 출처는 [CONTRIBUTING.md#frontmatter](CONTRIBUTING.md#frontmatter)와 [Standards Compliance](CONTRIBUTING.md#standards-compliance)를 참조하세요.
 
 ---
 
