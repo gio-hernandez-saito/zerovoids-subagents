@@ -2,7 +2,7 @@
 
 > 흩어진 조각들을 우주로 만들다
 
-개발 경험에서 얻은 파편화된 지식과 패턴을 체계화하는 프로젝트. **범용 방법론 toolkit**과 **자율 실행 에이전트(probes)**로 구성됩니다.
+개발 경험에서 얻은 파편화된 지식과 패턴을 체계화하는 프로젝트. **범용 방법론 toolkit**과 **자율 실행 에이전트(probes)** 로 구성됩니다.
 
 Toolkit은 [Claude Code Skills](https://code.claude.com/docs/en/skills) 표준 위에 빌드된 4-레이어 시스템입니다. 표준 frontmatter 필드를 모두 그대로 받고, 빌드 시스템 운영을 위해 4개 필드(`version`, `layer`, `uses`, `external`)를 추가합니다. 표준 인용과 적용 규칙은 [CONTRIBUTING.md#standards-compliance](CONTRIBUTING.md#standards-compliance)를 참조하세요.
 
