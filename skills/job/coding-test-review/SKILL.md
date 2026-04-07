@@ -1,8 +1,9 @@
 ---
 name: coding-test-review
-description: 코딩 테스트 풀이 평가 기준. 풀이 리뷰 및 개선 풀이 작성 시 참고됩니다.
+description: JS/TS 코딩 테스트·알고리즘 풀이를 6개 항목(정확성·시간복잡도·공간복잡도·가독성·언어활용도·면접 설명력)으로 ★ 평가하는 루브릭. "코테 리뷰", "풀이 평가", ".best.js" 관련 작업 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: skill
+user-invocable: false
 ---
 
 ## 평가 척도

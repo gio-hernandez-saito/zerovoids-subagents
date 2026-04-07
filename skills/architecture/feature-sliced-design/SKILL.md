@@ -1,8 +1,9 @@
 ---
 name: feature-sliced-design
-description: Feature-Sliced Design 아키텍처 규칙. FSD 기반 프로젝트 작업 시 자동으로 참고됩니다.
+description: Feature-Sliced Design(FSD) 아키텍처 규칙. Layer(app/pages/widgets/features/entities/shared) → Slice → Segment 3단계 구조와 단방향 의존성. "FSD", "feature-sliced", 프론트엔드 디렉토리 구조 작업 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: skill
+user-invocable: false
 external:
   - type: url
     href: https://feature-sliced.design/docs/get-started/overview

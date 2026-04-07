@@ -1,8 +1,9 @@
 ---
 name: assignment-generator
-description: FE 과제 전형 생성. "과제 하나 줘", "assignment" 등의 요청 시 사용합니다.
+description: FE 과제 전형 문제를 생성합니다 (중복 방지, 난이도 표기, job-prep/assignments 디렉토리 생성). "과제 하나 줘", "assignment", "과제 만들어줘" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/assignment-review@^0.0.1
 ---

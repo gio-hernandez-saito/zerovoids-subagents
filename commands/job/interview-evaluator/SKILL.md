@@ -1,8 +1,9 @@
 ---
 name: interview-evaluator
-description: 기술 면접 답변 평가. "면접 답변 평가해줘", "review my answer" 등의 요청 시 사용합니다.
+description: 기술 면접 답변을 평가하고 모범 답변과 예상 꼬리질문을 작성합니다. "면접 답변 평가해줘", "review my answer", "모범 답변 알려줘" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/interview-review@^0.0.1
 ---

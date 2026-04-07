@@ -1,8 +1,9 @@
 ---
 name: interview-generator
-description: FE 기술 면접 질문 생성. "면접 질문 줘", "interview question" 등의 요청 시 사용합니다.
+description: FE 기술 면접 질문을 생성합니다 (외부 레퍼런스 기반, 중복 방지, 카테고리 분산). "면접 질문 줘", "interview question", "기술 질문 만들어줘" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/interview-review@^0.0.1
 ---

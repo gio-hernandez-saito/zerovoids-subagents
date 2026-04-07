@@ -1,8 +1,9 @@
 ---
 name: coding-test-evaluator
-description: 코딩 테스트 풀이 평가 및 개선 풀이 작성. "코테 리뷰해줘", "풀이 평가해줘" 등의 요청 시 사용합니다.
+description: 코딩 테스트 풀이를 평가하고 필요 시 .best.js 개선 풀이를 작성합니다. "코테 리뷰해줘", "풀이 평가해줘", ".best.js 만들어줘" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/coding-test-review@^0.0.1
 ---

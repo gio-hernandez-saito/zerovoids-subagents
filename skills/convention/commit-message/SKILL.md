@@ -1,8 +1,9 @@
 ---
 name: commit-message
-description: 커밋 메시지 포맷 규칙. 커밋 관련 작업 시 자동으로 참고됩니다.
+description: Conventional Commits 기반 커밋 메시지 포맷 규칙(type, scope, subject, body, footer). "커밋해줘", "커밋 메시지", "commit message" 관련 작업 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: skill
+user-invocable: false
 external:
   - type: url
     href: https://www.conventionalcommits.org/en/v1.0.0/

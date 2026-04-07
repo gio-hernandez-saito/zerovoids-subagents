@@ -1,8 +1,9 @@
 ---
 name: commit
-description: 변경사항 분석 후 컨벤션에 맞게 커밋. "커밋해줘", "commit" 등의 요청 시 사용합니다.
+description: 변경사항을 분석해 Conventional Commits 형식으로 커밋합니다. "커밋해줘", "commit", "커밋 만들어줘" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/commit-message@^0.0.1
 ---

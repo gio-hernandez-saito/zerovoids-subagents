@@ -1,8 +1,9 @@
 ---
 name: mock-interview
-description: 실시간 모의 기술 면접. "모의 면접", "mock interview" 등의 요청 시 사용합니다.
+description: 면접관 2인 페르소나로 실시간 대화형 기술 면접을 진행하고 종료 시 결과를 공개합니다. "모의 면접", "mock interview", "기술 면접 연습" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/interview-review@^0.0.1
 ---

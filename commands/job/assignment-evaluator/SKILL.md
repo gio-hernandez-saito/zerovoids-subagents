@@ -1,8 +1,9 @@
 ---
 name: assignment-evaluator
-description: 과제 전형 결과물 평가. "과제 평가해줘", "review assignment" 등의 요청 시 사용합니다.
+description: submitted 상태 과제 결과물을 평가하고 REVIEW.md를 작성합니다. "과제 평가해줘", "review assignment", "과제 합격 여부" 등의 요청 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: command
+disable-model-invocation: true
 uses:
   - skill/assignment-review@^0.0.1
 ---

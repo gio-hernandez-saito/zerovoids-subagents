@@ -1,8 +1,9 @@
 ---
 name: assignment-review
-description: 과제 전형 평가 기준. 과제 결과물 리뷰 시 참고됩니다.
+description: FE 과제 전형 결과물을 6개 항목(코드 품질·아키텍처·기능 완성도·UX/UI·성능·문서/커밋)으로 ★ 평가하는 루브릭. "과제 평가", "과제 리뷰", "합격 판정" 관련 작업 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: skill
+user-invocable: false
 ---
 
 > context: 프론트엔드 개발자. TypeScript 베이스. React, Vue 경험.

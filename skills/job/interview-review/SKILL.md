@@ -1,8 +1,9 @@
 ---
 name: interview-review
-description: 기술 면접 답변 평가 기준. 면접 답변 리뷰 시 참고됩니다.
+description: 기술 면접 답변을 5개 항목(정확성·깊이·구조화·실무 연결·간결성)으로 ★ 평가하는 루브릭. "면접 답변 평가", "면접 답변 리뷰", "모범 답변" 관련 작업 시 이 스킬을 사용합니다.
 version: 0.0.1
 layer: skill
+user-invocable: false
 ---
 
 > context: 프론트엔드 개발자. TypeScript 베이스. React, Vue 경험.
