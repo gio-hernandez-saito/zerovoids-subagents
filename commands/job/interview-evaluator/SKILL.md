@@ -1,7 +1,7 @@
 ---
 name: interview-evaluator
 description: 기술 면접 답변 평가. "면접 답변 평가해줘", "review my answer" 등의 요청 시 사용합니다.
-version: 0.0.2
+version: 0.0.1
 layer: command
 uses:
   - skill/interview-review@^0.0.1

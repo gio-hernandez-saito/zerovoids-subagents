@@ -1,7 +1,7 @@
 ---
 name: interview-generator
 description: FE 기술 면접 질문 생성. "면접 질문 줘", "interview question" 등의 요청 시 사용합니다.
-version: 0.0.2
+version: 0.0.1
 layer: command
 uses:
   - skill/interview-review@^0.0.1

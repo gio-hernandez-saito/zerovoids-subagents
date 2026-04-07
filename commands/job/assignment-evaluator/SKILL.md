@@ -1,7 +1,7 @@
 ---
 name: assignment-evaluator
 description: 과제 전형 결과물 평가. "과제 평가해줘", "review assignment" 등의 요청 시 사용합니다.
-version: 0.0.2
+version: 0.0.1
 layer: command
 uses:
   - skill/assignment-review@^0.0.1
