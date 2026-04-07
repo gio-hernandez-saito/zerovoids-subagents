@@ -6,8 +6,6 @@ layer: skill
 user-invocable: false
 ---
 
-> context: 프론트엔드 개발자. TypeScript 베이스. React, Vue 경험.
-
 ## 평가 척도
 
 답변을 아래 5개 항목으로 평가합니다. ★ 5점 만점 (0.5 단위).

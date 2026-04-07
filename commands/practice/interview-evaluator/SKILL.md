@@ -14,7 +14,7 @@ uses:
 
 ## Workflow
 
-1. `job-prep/interview/` 에서 `status: answered` 인 파일을 찾음 (또는 사용자가 지정)
+1. 사용자가 지정한 면접 노트 디렉토리(`$ARGUMENTS`, 미지정 시 사용자에게 질문)에서 `status: answered` 인 파일을 찾음
 2. 질문과 답변을 읽고 skill/interview-review 평가 척도에 따라 리뷰
 3. 리뷰 결과를 해당 파일의 `## 리뷰` 섹션에 작성
 4. 모범 답변을 `## 모범 답변` 섹션에 작성

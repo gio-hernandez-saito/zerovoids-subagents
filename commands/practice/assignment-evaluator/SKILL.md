@@ -14,7 +14,7 @@ uses:
 
 ## Workflow
 
-1. `job-prep/assignments/` 에서 `status: submitted` 인 과제를 찾음 (또는 사용자가 지정)
+1. 사용자가 지정한 과제 디렉토리(`$ARGUMENTS`, 미지정 시 사용자에게 질문)에서 `status: submitted` 인 과제를 찾음
 2. README.md의 요구사항과 실제 구현을 대조
 3. 전체 코드를 읽고 skill/assignment-review 평가 척도에 따라 리뷰
 4. 리뷰 결과를 해당 과제 디렉토리에 `REVIEW.md`로 작성

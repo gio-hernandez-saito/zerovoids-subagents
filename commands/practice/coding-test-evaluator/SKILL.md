@@ -14,7 +14,7 @@ uses:
 
 ## Workflow
 
-1. `job-prep/coding-test/` 에서 사용자가 지정한 풀이 파일을 읽음
+1. 사용자가 지정한 풀이 파일을 읽음 (`$ARGUMENTS`로 파일 경로를 받거나, 미지정 시 사용자에게 경로를 질문)
 2. 문제 파악 (URL 주석에서 문제 확인)
 3. skill/coding-test-review 평가 척도에 따라 리뷰
 4. 리뷰 결과를 사용자에게 출력
