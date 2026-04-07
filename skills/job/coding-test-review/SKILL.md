@@ -1,7 +1,7 @@
 ---
 name: coding-test-review
 description: 코딩 테스트 풀이 평가 기준. 풀이 리뷰 및 개선 풀이 작성 시 참고됩니다.
-version: 0.0.2
+version: 0.0.1
 layer: skill
 ---
 
